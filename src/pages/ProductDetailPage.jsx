@@ -1,0 +1,181 @@
+import { useState, useEffect } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import { FiStar, FiHeart, FiShoppingCart, FiMinus, FiPlus, FiArrowLeft } from 'react-icons/fi';
+import { getProduct, toggleWishlist } from '../services/api';
+import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
+import { Loader } from '../components/common/Loader';
+import toast from 'react-hot-toast';
+
+export default function ProductDetailPage() {
+  const { slug } = useParams();
+  const { addToCart } = useCart();
+  const { user, refreshUser } = useAuth();
+
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [qty, setQty] = useState(1);
+  const [isWishlisted, setIsWishlisted] = useState(false);
+
+  const isAdmin = user?.role === 'admin';
+
+  useEffect(() => {
+    getProduct(slug)
+      .then(res => {
+        setProduct(res.data.product);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, [slug]);
+
+  useEffect(() => {
+    if (!user?.wishlist || !product?._id) {
+      setIsWishlisted(false);
+      return;
+    }
+
+    const isAdded = user.wishlist.some((item) => {
+      if (typeof item === 'object') {
+        return item?._id === product._id;
+      }
+
+      return item === product._id;
+    });
+
+    setIsWishlisted(isAdded);
+  }, [user, product?._id]);
+
+  const handleAddToCart = () => {
+    if (isAdmin) return;
+    addToCart(product._id, qty);
+  };
+
+  const handleWishlist = async () => {
+    if (isAdmin) return;
+
+    if (!user) {
+      toast.error('Please login first');
+      return;
+    }
+
+    try {
+      const { data } = await toggleWishlist({ productId: product._id });
+      setIsWishlisted(prev => !prev);
+      await refreshUser();
+      toast.success(data.message);
+    } catch {
+      toast.error('Failed to update wishlist');
+    }
+  };
+
+  if (loading) return <Loader />;
+  if (!product) return <p>Product not found</p>;
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 py-10 grid md:grid-cols-2 gap-10">
+      {/* IMAGE */}
+      <div>
+        <img
+          src={product.images?.[0]}
+          alt={product.name}
+          className="w-full rounded-2xl"
+        />
+      </div>
+
+      {/* PRODUCT INFO */}
+      <div>
+        <Link
+          to="/"
+          className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-primary-600 hover:text-primary-700"
+        >
+          <FiArrowLeft className="h-4 w-4" />
+          Back to Home
+        </Link>
+
+        <div className="flex items-center gap-3 mb-2">
+          <Link
+            to={`/products?category=${product.category?._id}`}
+            className="text-sm text-green-600 font-semibold"
+          >
+            {product.category?.name}
+          </Link>
+
+          {product.isOrganic && (
+            <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded">
+              🌿 Organic
+            </span>
+          )}
+        </div>
+
+        <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
+
+        <p className="text-xs text-gray-400 mb-3">
+          SKU: {product.sku || 'VALLAL-001'}
+        </p>
+
+        {/* Rating */}
+        <div className="flex items-center gap-2 mb-4">
+          {[1, 2, 3, 4, 5].map(s => (
+            <FiStar
+              key={s}
+              className={`${
+                s <= Math.round(product.rating)
+                  ? 'text-yellow-400 fill-yellow-400'
+                  : 'text-gray-300'
+              }`}
+            />
+          ))}
+          <span className="text-sm text-gray-500">
+            ({product.numReviews})
+          </span>
+        </div>
+
+        {/* Price */}
+        <div className="mb-4">
+          <span className="text-3xl font-bold">₹{product.price}</span>
+        </div>
+
+        <p className="text-gray-600 mb-6">{product.description}</p>
+
+        {/* Customer actions only */}
+        {!isAdmin ? (
+          <div className="flex items-center gap-4 mb-4">
+            <div className="flex items-center gap-3 rounded-xl border border-gray-200 px-3 py-3">
+              <button onClick={() => setQty(q => Math.max(1, q - 1))}>
+                <FiMinus />
+              </button>
+              <span>{qty}</span>
+              <button onClick={() => setQty(q => Math.min(product.stock, q + 1))}>
+                <FiPlus />
+              </button>
+            </div>
+
+            <button
+              onClick={handleAddToCart}
+              className="bg-green-600 text-white px-4 py-3 rounded-xl inline-flex items-center gap-2 whitespace-nowrap"
+            >
+              <FiShoppingCart /> Add to Cart
+            </button>
+
+            <button
+              onClick={handleWishlist}
+              className={`border px-4 py-3 rounded-xl inline-flex items-center justify-center transition-colors ${
+                isWishlisted ? 'bg-red-50 border-red-200 text-red-500' : 'text-gray-600'
+              }`}
+              aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+              title={isWishlisted ? 'Added to wishlist' : 'Add to wishlist'}
+            >
+              <FiHeart className={isWishlisted ? 'fill-red-500' : ''} />
+            </button>
+          </div>
+        ) : (
+          <></>
+        )}
+
+        <p className="mt-4 text-sm text-gray-500">
+          Stock: {product.stock}
+        </p>
+      </div>
+    </div>
+  );
+}
