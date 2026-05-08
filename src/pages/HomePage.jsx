@@ -397,8 +397,14 @@ export default function HomePage() {
   const navigate = useNavigate();
 
   const [current, setCurrent] = useState(0);
+  const currentReview = reviews[current] || reviews[0];
 
   useEffect(() => {
+    if (reviews.length === 0) {
+      setCurrent(0);
+      return undefined;
+    }
+
     const timer = setInterval(() => {
       setCurrent((prev) => (prev + 1) % reviews.length);
     }, 3000);
@@ -622,7 +628,7 @@ export default function HomePage() {
                   {[...Array(5)].map((_, index) => (
                     <FiStar
                       key={index}
-                      className={`text-lg ${index < reviews[current].rating
+                      className={`text-lg ${index < (currentReview?.rating || 0)
                           ? "text-yellow-400 fill-yellow-400"
                           : "text-gray-300"
                         }`}
@@ -632,17 +638,17 @@ export default function HomePage() {
 
                 {/* 💬 Review */}
                 <p className="text-gray-600 text-lg italic mb-6 leading-relaxed">
-                  “{reviews[current].text || "Very tasty and fresh product"}”
+                  “{currentReview?.text || "Very tasty and fresh product"}”
                 </p>
 
                 {/* 👤 User */}
                 <div className="flex items-center justify-center md:justify-start gap-3">
                   <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold">
-                    {(reviews[current].name || "H")[0]}
+                    {(currentReview?.name || "H")[0]}
                   </div>
                   <div>
                     <p className="font-semibold">
-                      {reviews[current].name || "Happy Customer"}
+                      {currentReview?.name || "Happy Customer"}
                     </p>
                     <p className="text-xs text-gray-400">Verified Buyer</p>
                   </div>
