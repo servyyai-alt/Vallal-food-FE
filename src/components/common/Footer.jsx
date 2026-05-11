@@ -48,7 +48,7 @@
 //           <div>
 //             <h4 className="mb-4 font-semibold text-white">Contact</h4>
 //             <div className="space-y-2 text-sm text-gray-400">
-//               <p>hello@freshmart.com</p>
+//               <p>vallalfoods@gmail.com</p>
 //               <p>+91 98422 09470</p>
 //               <p>Mon-Sat: 8AM - 8PM</p>
 //               <Link to="/contact" className="mt-3 inline-block font-medium text-primary-400 hover:text-primary-300">
@@ -200,7 +200,7 @@ export default function Footer() {
           <div>
             <h4 className="mb-4 font-semibold text-white">Contact</h4>
             <div className="space-y-2 text-sm text-gray-400">
-              <p>hello@freshmart.com</p>
+              <p>vallalfoods@gmail.com</p>
               <p>+91 98422 09470</p>
               <p>Mon-Sat: 8AM - 8PM</p>
               <Link to="/contact" className="mt-3 inline-block font-medium text-primary-400 hover:text-primary-300">

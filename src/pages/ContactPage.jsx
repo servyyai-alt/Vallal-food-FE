@@ -25,7 +25,7 @@ export default function ContactPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
         {[
-          { icon: <FiMail className="w-6 h-6" />, title: 'Email Us', detail: 'hello@freshmart.com', sub: 'We reply within 24 hours' },
+          { icon: <FiMail className="w-6 h-6" />, title: 'Email Us', detail: 'vallalfoods@gmail.com', sub: 'We reply within 24 hours' },
           { icon: <FiPhone className="w-6 h-6" />, title: 'Call Us', detail: '+91 98422 09470', sub: 'Toll-free support line' },
           { icon: <FiClock className="w-6 h-6" />, title: 'Working Hours', detail: 'Mon – Sat', sub: '8:00 AM – 8:00 PM IST' }
         ].map((item, i) => (
