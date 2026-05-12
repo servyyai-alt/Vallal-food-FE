@@ -16,7 +16,12 @@ export default function Navbar() {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    if (search.trim()) { navigate(`/products?search=${search}`); setSearch(''); }
+    const query = search.trim();
+    if (!query) return;
+
+    navigate(`/products?search=${encodeURIComponent(query)}`);
+    setSearch('');
+    setMobileOpen(false);
   };
 
   return (

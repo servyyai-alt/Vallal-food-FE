@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import { FiPlus, FiEdit2, FiTrash2, FiSearch, FiUpload } from 'react-icons/fi';
+import { FiPlus, FiEdit2, FiTrash2, FiUpload } from 'react-icons/fi';
 import { getAllProductsAdmin, getCategories, createProduct, updateProduct, deleteProduct, uploadImage } from '../../services/api';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { Loader } from '../../components/common/Loader';
 import toast from 'react-hot-toast';
+import { useAdminPanel } from '../../context/AdminPanelContext';
 
 const EMPTY = { name: '', description: '', price: '', originalPrice: '', discount: '', category: '', stock: '', unit: 'kg', images: [''], isOrganic: false, isFeatured: false, tags: '', nutrition: { calories: '', protein: '', carbs: '', fat: '', fiber: '' } };
 
@@ -14,10 +15,10 @@ export default function AdminProducts() {
   const [modal, setModal] = useState(false);
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(EMPTY);
-  const [search, setSearch] = useState('');
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef(null);
+  const { currentSearch } = useAdminPanel();
 
   const load = async () => {
     const [p, c] = await Promise.all([getAllProductsAdmin(), getCategories()]);
@@ -55,23 +56,43 @@ export default function AdminProducts() {
 
   const handleDelete = async (id) => {
     if (!confirm('Delete this product?')) return;
-    await deleteProduct(id); toast.success('Product deleted'); load();
+    try {
+      await deleteProduct(id);
+      setProducts(prev => prev.filter(product => product._id !== id));
+      toast.success('Product deleted');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to delete product');
+    }
   };
 
-  const filtered = products.filter(p => p.name.toLowerCase().includes(search.toLowerCase()));
+  const keyword = currentSearch.trim().toLowerCase();
+  const filtered = products.filter(product => {
+    if (!keyword) return true;
+    const searchable = [
+      product.name,
+      product.description,
+      product.category?.name,
+      ...(product.tags || [])
+    ]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase();
+    return searchable.includes(keyword);
+  });
 
   return (
     <AdminLayout>
       <div className="space-y-5 animate-fade-in">
         <div className="flex items-center justify-between gap-4 flex-wrap">
-          <div className="relative flex-1 max-w-xs">
-            <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search products..." className="input-field pl-10 py-2 text-sm" />
-          </div>
           <button onClick={openCreate} className="btn-primary flex items-center gap-2 text-sm py-2"><FiPlus /> Add Product</button>
         </div>
 
-        {loading ? <Loader /> : (
+        {loading ? <Loader /> : filtered.length === 0 ? (
+          <div className="card p-10 text-center">
+            <p className="text-lg font-semibold text-gray-900">No matching products found</p>
+            <p className="mt-2 text-sm text-gray-500">Try another product name, category, or tag keyword.</p>
+          </div>
+        ) : (
           <div className="card overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">

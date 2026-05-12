@@ -4,6 +4,7 @@ import { getAllOrders, updateOrderStatus } from '../../services/api';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { Loader } from '../../components/common/Loader';
 import toast from 'react-hot-toast';
+import { useAdminPanel } from '../../context/AdminPanelContext';
 
 const STATUSES = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
 const STATUS_STYLES = {
@@ -20,6 +21,7 @@ export default function AdminOrders() {
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(null);
   const [filter, setFilter] = useState('');
+  const { currentSearch } = useAdminPanel();
 
   const load = () => getAllOrders().then(r => { setOrders(r.data.orders); setLoading(false); });
   useEffect(() => { load(); }, []);
@@ -30,7 +32,27 @@ export default function AdminOrders() {
     load();
   };
 
-  const filtered = filter ? orders.filter(o => o.orderStatus === filter) : orders;
+  const keyword = currentSearch.trim().toLowerCase();
+  const filtered = orders.filter(order => {
+    const matchesStatus = filter ? order.orderStatus === filter : true;
+    if (!matchesStatus) return false;
+    if (!keyword) return true;
+
+    const searchable = [
+      order._id,
+      order.user?.name,
+      order.user?.phone,
+      order.shippingAddress?.fullName,
+      order.shippingAddress?.phone,
+      order.orderStatus,
+      ...(order.orderItems || []).map(item => item.name)
+    ]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase();
+
+    return searchable.includes(keyword);
+  });
 
   return (
     <AdminLayout>
@@ -47,7 +69,12 @@ export default function AdminOrders() {
           })}
         </div>
 
-        {loading ? <Loader /> : (
+        {loading ? <Loader /> : filtered.length === 0 ? (
+          <div className="card p-10 text-center">
+            <p className="text-lg font-semibold text-gray-900">No matching orders found</p>
+            <p className="mt-2 text-sm text-gray-500">Try another order ID, customer name, phone number, product name, or status.</p>
+          </div>
+        ) : (
           <div className="space-y-3">
             {filtered.map(order => (
               <div key={order._id} className="card overflow-hidden">

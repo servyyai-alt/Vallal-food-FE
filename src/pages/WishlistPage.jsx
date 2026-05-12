@@ -33,7 +33,7 @@ export default function WishlistPage() {
 
       {wishlist.length === 0 ? (
         <div className="text-center py-20">
-          <div className="text-7xl mb-6">💝</div>
+          {/* <div className="text-7xl mb-6">💝</div> */}
           <h2 className="text-2xl font-bold text-gray-800 mb-3">Your wishlist is empty</h2>
           <p className="text-gray-500 mb-6">Save items you love for later</p>
           <Link to="/products" className="btn-primary inline-flex items-center gap-2">

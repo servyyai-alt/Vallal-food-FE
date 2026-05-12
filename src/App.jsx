@@ -4,6 +4,7 @@ import { Toaster } from 'react-hot-toast';
 import { FaWhatsapp } from 'react-icons/fa';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
+import { AdminPanelProvider } from './context/AdminPanelContext';
 import { ProtectedRoute, AdminRoute } from './routes/ProtectedRoute';
 import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
@@ -20,6 +21,7 @@ import OrderConfirmationPage from './pages/OrderConfirmationPage';
 import OrderHistoryPage from './pages/OrderHistoryPage';
 import ProfilePage from './pages/ProfilePage';
 import ContactPage from './pages/ContactPage';
+import PolicyPage from './pages/PolicyPage';
 
 // Admin
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -64,6 +66,10 @@ function WhatsAppButton() {
   );
 }
 
+function AdminShell({ children }) {
+  return <AdminPanelProvider>{children}</AdminPanelProvider>;
+}
+
 export default function App() {
   return (
     <BrowserRouter>
@@ -81,6 +87,11 @@ export default function App() {
             <Route path="/products" element={<Layout><ProductsPage /></Layout>} />
             <Route path="/products/:slug" element={<Layout><ProductDetailPage /></Layout>} />
             <Route path="/contact" element={<Layout><ContactPage /></Layout>} />
+            <Route path="/privacy-policy" element={<Layout><PolicyPage /></Layout>} />
+            <Route path="/terms-and-conditions" element={<Layout><PolicyPage /></Layout>} />
+            <Route path="/refund-cancellation-policy" element={<Layout><PolicyPage /></Layout>} />
+            <Route path="/safety-guidelines" element={<Layout><PolicyPage /></Layout>} />
+            <Route path="/user-verification-policy" element={<Layout><PolicyPage /></Layout>} />
 
             {/* Auth routes (no nav/footer) */}
             <Route path="/login" element={<LoginPage />} />
@@ -96,12 +107,12 @@ export default function App() {
             <Route path="/profile" element={<Layout><ProtectedRoute><ProfilePage /></ProtectedRoute></Layout>} />
 
             {/* Admin routes (no shared nav/footer, have own layout) */}
-            <Route path="/admin" element={<AdminRoute><Navigate to="/admin/dashboard" replace /></AdminRoute>} />
-            <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
-            <Route path="/admin/products" element={<AdminRoute><AdminProducts /></AdminRoute>} />
-            <Route path="/admin/categories" element={<AdminRoute><AdminCategories /></AdminRoute>} />
-            <Route path="/admin/orders" element={<AdminRoute><AdminOrders /></AdminRoute>} />
-            <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
+            <Route path="/admin" element={<AdminRoute><AdminShell><Navigate to="/admin/dashboard" replace /></AdminShell></AdminRoute>} />
+            <Route path="/admin/dashboard" element={<AdminRoute><AdminShell><AdminDashboard /></AdminShell></AdminRoute>} />
+            <Route path="/admin/products" element={<AdminRoute><AdminShell><AdminProducts /></AdminShell></AdminRoute>} />
+            <Route path="/admin/categories" element={<AdminRoute><AdminShell><AdminCategories /></AdminShell></AdminRoute>} />
+            <Route path="/admin/orders" element={<AdminRoute><AdminShell><AdminOrders /></AdminShell></AdminRoute>} />
+            <Route path="/admin/users" element={<AdminRoute><AdminShell><AdminUsers /></AdminShell></AdminRoute>} />
 
             {/* 404 */}
             <Route path="*" element={

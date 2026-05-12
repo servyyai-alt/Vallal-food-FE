@@ -4,6 +4,7 @@ import { getCategories, createCategory, updateCategory, deleteCategory } from '.
 import AdminLayout from '../../components/admin/AdminLayout';
 import { Loader } from '../../components/common/Loader';
 import toast from 'react-hot-toast';
+import { useAdminPanel } from '../../context/AdminPanelContext';
 
 const EMPTY = { name: '', description: '', icon: '🛒', image: '', sortOrder: 0 };
 
@@ -14,6 +15,7 @@ export default function AdminCategories() {
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(EMPTY);
   const [saving, setSaving] = useState(false);
+  const { currentSearch } = useAdminPanel();
 
   const load = () => getCategories().then(r => { setCategories(r.data.categories); setLoading(false); });
   useEffect(() => { load(); }, []);
@@ -36,6 +38,16 @@ export default function AdminCategories() {
     await deleteCategory(id); toast.success('Category deleted'); load();
   };
 
+  const keyword = currentSearch.trim().toLowerCase();
+  const filtered = categories.filter(category => {
+    if (!keyword) return true;
+    return [category.name, category.description]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase()
+      .includes(keyword);
+  });
+
   return (
     <AdminLayout>
       <div className="space-y-5 animate-fade-in">
@@ -43,9 +55,14 @@ export default function AdminCategories() {
           <button onClick={openCreate} className="btn-primary flex items-center gap-2 text-sm py-2"><FiPlus /> Add Category</button>
         </div>
 
-        {loading ? <Loader /> : (
+        {loading ? <Loader /> : filtered.length === 0 ? (
+          <div className="card p-10 text-center">
+            <p className="text-lg font-semibold text-gray-900">No matching records found</p>
+            <p className="mt-2 text-sm text-gray-500">Try another category name or description keyword.</p>
+          </div>
+        ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {categories.map(cat => (
+            {filtered.map(cat => (
               <div key={cat._id} className="card p-5 flex items-center gap-4">
                 <div className="text-4xl">{cat.icon}</div>
                 <div className="flex-1 min-w-0">

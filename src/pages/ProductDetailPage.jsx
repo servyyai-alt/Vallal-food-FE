@@ -78,7 +78,7 @@ export default function ProductDetailPage() {
         <img
           src={product.images?.[0]}
           alt={product.name}
-          className="w-full rounded-2xl"
+          className="w-full h-[550px] rounded-2xl "
         />
       </div>
 

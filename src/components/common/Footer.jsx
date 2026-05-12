@@ -130,14 +130,14 @@ export default function Footer() {
   return (
     <footer className="mt-auto bg-gray-900 pt-16 pb-8 text-gray-300">
       <div className="mx-auto max-w-7xl px-4">
-        <div className="mb-12 grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-[1.2fr_0.8fr_0.9fr_0.9fr_1.8fr] xl:items-start">
+        <div className="mb-12 grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-[1.1fr_0.8fr_0.9fr_0.9fr_1fr_1.6fr] xl:items-start">
           <div>
             <div className="mb-4 flex items-center gap-2">
               <img src={logo} alt="FreshMart" className="h-12 w-auto rounded-md object-contain" />
             </div>
-            <p className="text-sm leading-relaxed text-gray-400">
-              Farm-fresh groceries delivered to your doorstep. We source directly from farmers for maximum freshness.
-            </p>
+           <p className="text-sm leading-relaxed text-gray-400">
+  Fresh store foods and daily essentials delivered to your doorstep with quality, freshness, and care.
+</p>
           </div>
 
           <div>
@@ -207,6 +207,25 @@ export default function Footer() {
                 Contact Support
               </Link>
             </div>
+          </div>
+
+          <div>
+            <h4 className="mb-4 font-semibold text-white">Policies</h4>
+            <ul className="space-y-2 text-sm">
+              {[
+                ['/privacy-policy', 'Privacy Policy'],
+                ['/terms-and-conditions', 'Terms & Conditions'],
+                ['/refund-cancellation-policy', 'Refund / Cancellation Policy'],
+                ['/safety-guidelines', 'Safety Guidelines'],
+                ['/user-verification-policy', 'User Verification Policy']
+              ].map(([to, label]) => (
+                <li key={to}>
+                  <Link to={to} className="transition-colors hover:text-primary-400">
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
 
           <div>

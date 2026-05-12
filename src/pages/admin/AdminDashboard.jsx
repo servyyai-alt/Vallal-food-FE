@@ -4,6 +4,7 @@ import { FiShoppingBag, FiUsers, FiPackage, FiDollarSign, FiArrowRight } from 'r
 import { getDashboardStats } from '../../services/api';
 import { Loader } from '../../components/common/Loader';
 import AdminLayout from '../../components/admin/AdminLayout';
+import { useAdminPanel } from '../../context/AdminPanelContext';
 
 const STATUS_STYLES = {
   pending: 'bg-yellow-100 text-yellow-700',
@@ -17,15 +18,37 @@ const STATUS_STYLES = {
 export default function AdminDashboard() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { currentSearch } = useAdminPanel();
 
   useEffect(() => {
-    getDashboardStats().then(r => { setStats(r.data.stats); setLoading(false); }).catch(() => setLoading(false));
+    getDashboardStats()
+      .then(r => {
+        setStats(r.data.stats);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
   }, []);
 
-  if (loading) return <AdminLayout><Loader size="lg" /></AdminLayout>;
+  if (loading) {
+    return (
+      <AdminLayout>
+        <Loader size="lg" />
+      </AdminLayout>
+    );
+  }
 
-  const CARDS = [
-    { label: 'Total Revenue', value: `₹${stats?.totalRevenue?.toLocaleString('en-IN') || 0}`, icon: <FiDollarSign />, color: 'bg-primary-500', to: '/admin/orders' },
+  const keyword = currentSearch.trim().toLowerCase();
+  const recentOrders = (stats?.recentOrders || []).filter(order => {
+    if (!keyword) return true;
+    return [order._id, order.user?.name, order.orderStatus]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase()
+      .includes(keyword);
+  });
+
+  const cards = [
+    { label: 'Total Revenue', value: `Rs. ${stats?.totalRevenue?.toLocaleString('en-IN') || 0}`, icon: <FiDollarSign />, color: 'bg-primary-500', to: '/admin/orders' },
     { label: 'Total Orders', value: stats?.totalOrders || 0, icon: <FiPackage />, color: 'bg-blue-500', to: '/admin/orders' },
     { label: 'Total Products', value: stats?.totalProducts || 0, icon: <FiShoppingBag />, color: 'bg-purple-500', to: '/admin/products' },
     { label: 'Total Users', value: stats?.totalUsers || 0, icon: <FiUsers />, color: 'bg-accent-500', to: '/admin/users' }
@@ -35,13 +58,13 @@ export default function AdminDashboard() {
     <AdminLayout>
       <div className="space-y-6 animate-fade-in">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {CARDS.map((c, i) => (
-            <Link key={i} to={c.to} className="card p-5 hover:shadow-md transition-shadow">
+          {cards.map((card, index) => (
+            <Link key={index} to={card.to} className="card p-5 hover:shadow-md transition-shadow">
               <div className="flex items-start justify-between mb-3">
-                <div className={`${c.color} w-10 h-10 rounded-xl flex items-center justify-center text-white`}>{c.icon}</div>
+                <div className={`${card.color} w-10 h-10 rounded-xl flex items-center justify-center text-white`}>{card.icon}</div>
               </div>
-              <p className="text-2xl font-bold text-gray-900">{c.value}</p>
-              <p className="text-sm text-gray-500 mt-0.5">{c.label}</p>
+              <p className="text-2xl font-bold text-gray-900">{card.value}</p>
+              <p className="text-sm text-gray-500 mt-0.5">{card.label}</p>
             </Link>
           ))}
         </div>
@@ -57,25 +80,35 @@ export default function AdminDashboard() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100">
-                  {['Order ID', 'Customer', 'Amount', 'Status', 'Date'].map(h => (
-                    <th key={h} className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wide">{h}</th>
+                  {['Order ID', 'Customer', 'Amount', 'Status', 'Date'].map(heading => (
+                    <th key={heading} className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                      {heading}
+                    </th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {stats?.recentOrders?.map(order => (
-                  <tr key={order._id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                    <td className="py-3 px-4 font-mono text-gray-600">#{order._id.slice(-6).toUpperCase()}</td>
-                    <td className="py-3 px-4 font-medium text-gray-900">{order.user?.name}</td>
-                    <td className="py-3 px-4 font-semibold text-gray-900">₹{order.totalPrice}</td>
-                    <td className="py-3 px-4">
-                      <span className={`text-xs font-semibold px-2.5 py-1 rounded-full capitalize ${STATUS_STYLES[order.orderStatus]}`}>
-                        {order.orderStatus}
-                      </span>
+                {recentOrders.length === 0 ? (
+                  <tr>
+                    <td colSpan="5" className="py-8 px-4 text-center text-gray-500">
+                      No matching recent orders found
                     </td>
-                    <td className="py-3 px-4 text-gray-500">{new Date(order.createdAt).toLocaleDateString('en-IN')}</td>
                   </tr>
-                ))}
+                ) : (
+                  recentOrders.map(order => (
+                    <tr key={order._id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                      <td className="py-3 px-4 font-mono text-gray-600">#{order._id.slice(-6).toUpperCase()}</td>
+                      <td className="py-3 px-4 font-medium text-gray-900">{order.user?.name}</td>
+                      <td className="py-3 px-4 font-semibold text-gray-900">Rs. {order.totalPrice}</td>
+                      <td className="py-3 px-4">
+                        <span className={`text-xs font-semibold px-2.5 py-1 rounded-full capitalize ${STATUS_STYLES[order.orderStatus]}`}>
+                          {order.orderStatus}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4 text-gray-500">{new Date(order.createdAt).toLocaleDateString('en-IN')}</td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

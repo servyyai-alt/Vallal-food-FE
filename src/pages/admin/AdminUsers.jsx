@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
-import { FiSearch, FiTrash2, FiShield } from 'react-icons/fi';
+import { FiTrash2, FiShield } from 'react-icons/fi';
 import { getAllUsers, updateUser, deleteUser } from '../../services/api';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { Loader } from '../../components/common/Loader';
 import toast from 'react-hot-toast';
+import { useAdminPanel } from '../../context/AdminPanelContext';
 
 export default function AdminUsers() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
+  const { currentSearch } = useAdminPanel();
 
   const load = () => getAllUsers().then(r => { setUsers(r.data.users); setLoading(false); });
   useEffect(() => { load(); }, []);
@@ -27,21 +28,21 @@ export default function AdminUsers() {
     await deleteUser(id); toast.success('User deactivated'); load();
   };
 
+  const keyword = currentSearch.trim().toLowerCase();
   const filtered = users.filter(u =>
     u.role?.toLowerCase().trim() !== 'admin' && (
-      u.name.toLowerCase().includes(search.toLowerCase()) ||
-      u.email.toLowerCase().includes(search.toLowerCase())
+      !keyword ||
+      [u.name, u.email, u.phone, u.role, u.isActive ? 'active' : 'inactive']
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase()
+        .includes(keyword)
     )
   );
 
   return (
     <AdminLayout>
       <div className="space-y-5 animate-fade-in">
-        <div className="relative max-w-xs">
-          <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search users..." className="input-field pl-10 py-2 text-sm" />
-        </div>
-
         {loading ? <Loader /> : (
           <div className="card overflow-hidden">
             <div className="overflow-x-auto">
@@ -57,7 +58,7 @@ export default function AdminUsers() {
                   {filtered.length === 0 ? (
                     <tr>
                       <td colSpan="7" className="text-center py-6 text-gray-400">
-                        No users available
+                        No matching users found
                       </td>
                     </tr>
                   ) : (
@@ -90,9 +91,9 @@ export default function AdminUsers() {
                       </td>
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-1.5">
-                          <button onClick={() => toggleRole(user)} title="Toggle Role" className="w-8 h-8 bg-purple-50 text-purple-600 rounded-lg flex items-center justify-center hover:bg-purple-100">
+                          {/* <button onClick={() => toggleRole(user)} title="Toggle Role" className="w-8 h-8 bg-purple-50 text-purple-600 rounded-lg flex items-center justify-center hover:bg-purple-100">
                             <FiShield className="w-3.5 h-3.5" />
-                          </button>
+                          </button> */}
                           <button onClick={() => handleDelete(user._id)} className="w-8 h-8 bg-red-50 text-red-500 rounded-lg flex items-center justify-center hover:bg-red-100">
                             <FiTrash2 className="w-3.5 h-3.5" />
                           </button>
