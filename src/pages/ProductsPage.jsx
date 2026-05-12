@@ -86,24 +86,39 @@ export default function ProductsPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">
-          {filters.search ? `Results for "${filters.search}"` : 'Fresh Groceries'}
-          <span className="text-gray-400 text-lg font-normal ml-2">({total})</span>
-        </h1>
-        <div className="flex items-center gap-3">
-          <select value={filters.sort} onChange={e => updateFilter('sort', e.target.value)} className="input-field w-auto text-sm py-2">
-            <option value="">Sort By</option>
-            <option value="price_asc">Price: Low to High</option>
-            <option value="price_desc">Price: High to Low</option>
-            <option value="rating">Top Rated</option>
-            <option value="name">Name A-Z</option>
-          </select>
-          <button onClick={() => setShowFilters(!showFilters)} className="md:hidden flex items-center gap-2 btn-outline text-sm py-2 px-4">
-            <FiFilter /> Filters
-          </button>
-        </div>
-      </div>
+      <div className="flex flex-col gap-4 mb-6 md:flex-row md:items-center md:justify-between">
+  
+  {/* First Line - Heading */}
+  <h1 className="text-2xl font-bold text-gray-900">
+    {filters.search ? `Results for "${filters.search}"` : 'Fresh Groceries'}
+    <span className="text-gray-400 text-lg font-normal ml-2">
+      ({total})
+    </span>
+  </h1>
+
+  {/* Second Line - Sort & Filter */}
+  <div className="flex items-center gap-3 w-full md:w-auto">
+    <select
+      value={filters.sort}
+      onChange={e => updateFilter('sort', e.target.value)}
+      className="input-field flex-1 md:w-auto text-sm py-2"
+    >
+      <option value="">Sort By</option>
+      <option value="price_asc">Price: Low to High</option>
+      <option value="price_desc">Price: High to Low</option>
+      <option value="rating">Top Rated</option>
+      <option value="name">Name A-Z</option>
+    </select>
+
+    <button
+      onClick={() => setShowFilters(!showFilters)}
+      className="md:hidden flex items-center gap-2 btn-outline text-sm py-2 px-4 whitespace-nowrap"
+    >
+      <FiFilter /> Filters
+    </button>
+  </div>
+
+</div>
 
       {/* Search on mobile */}
       <div className="md:hidden mb-4">

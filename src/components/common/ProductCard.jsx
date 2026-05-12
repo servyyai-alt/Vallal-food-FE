@@ -233,8 +233,8 @@ export default function ProductCard({ product }) {
   };
 
   return (
-    <Link to={`/products/${product.slug}`} className="block">
-      <div className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group cursor-pointer">
+  <Link to={`/products/${product.slug}`} className="block h-full">
+    <div className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group cursor-pointer flex flex-col h-full">
 
         {/* Image */}
         <div className="relative overflow-hidden aspect-square bg-gray-50">

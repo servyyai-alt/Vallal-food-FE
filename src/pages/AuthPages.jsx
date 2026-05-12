@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import logo from '../assets/logo.jpeg';
 
 export function LoginPage() {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -27,8 +28,7 @@ export function LoginPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2 mb-6">
-            <span className="text-4xl">🌿</span>
-            <span className="font-display text-2xl font-bold text-primary-700">FreshMart</span>
+                        <img src={logo} alt="Vallal Food logo" className="h-16 w-auto object-contain" />
           </Link>
           <h1 className="text-3xl font-bold text-gray-900">Welcome Back</h1>
           <p className="text-gray-500 mt-2">Sign in to your account</p>
@@ -107,8 +107,7 @@ export function RegisterPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2 mb-6">
-            <span className="text-4xl">🌿</span>
-            <span className="font-display text-2xl font-bold text-primary-700">FreshMart</span>
+            <img src={logo} alt="Vallal Food logo" className="h-16 w-auto object-contain" />
           </Link>
           <h1 className="text-3xl font-bold text-gray-900">Create Account</h1>
           <p className="text-gray-500 mt-2">Join thousands of happy customers</p>

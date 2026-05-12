@@ -23,43 +23,98 @@ export default function CartPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 animate-fade-in">
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Shopping Cart <span className="text-gray-400 font-normal text-lg">({cart.items.length} items)</span></h1>
-        <button onClick={clearCart} className="text-sm text-red-500 hover:text-red-600 font-medium flex items-center gap-1.5">
-          <FiTrash2 className="w-4 h-4" /> Clear Cart
-        </button>
-      </div>
+      <div className="flex flex-col gap-4 mb-8 md:flex-row md:items-center md:justify-between">
+  
+  {/* First Line - Heading */}
+  <h1 className="text-2xl font-bold text-gray-900">
+    Shopping Cart
+    <span className="text-gray-400 font-normal text-lg ml-2">
+      ({cart.items.length} items)
+    </span>
+  </h1>
+
+  {/* Second Line - Button */}
+  <div className="flex justify-start md:justify-end">
+    <button
+      onClick={clearCart}
+      className="text-sm text-red-500 hover:text-red-600 font-medium flex items-center gap-1.5"
+    >
+      <FiTrash2 className="w-4 h-4" /> Clear Cart
+    </button>
+  </div>
+
+</div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Cart Items */}
         <div className="lg:col-span-2 space-y-4">
           {cart.items.map(item => (
-            <div key={item._id} className="card p-4 flex items-center gap-4">
-              <img
-                src={item.product?.images?.[0] || 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=200'}
-                alt={item.product?.name}
-                className="w-20 h-20 rounded-xl object-cover flex-shrink-0"
-              />
-              <div className="flex-1 min-w-0">
-                <Link to={`/products/${item.product?.slug || '#'}`} className="font-semibold text-gray-900 hover:text-primary-600 transition-colors line-clamp-1">
-                  {item.product?.name}
-                </Link>
-                <p className="text-sm text-gray-500 mt-0.5">₹{item.price} / {item.product?.unit}</p>
-                <p className="text-primary-600 font-bold mt-1">₹{(item.price * item.quantity).toFixed(2)}</p>
-              </div>
-              <div className="flex items-center border border-gray-200 rounded-xl overflow-hidden flex-shrink-0">
-                <button onClick={() => updateItem(item._id, item.quantity - 1)} className="px-3 py-2 hover:bg-gray-50 transition-colors text-gray-600">
-                  <FiMinus className="w-3.5 h-3.5" />
-                </button>
-                <span className="px-4 font-semibold text-sm">{item.quantity}</span>
-                <button onClick={() => updateItem(item._id, item.quantity + 1)} className="px-3 py-2 hover:bg-gray-50 transition-colors text-gray-600">
-                  <FiPlus className="w-3.5 h-3.5" />
-                </button>
-              </div>
-              <button onClick={() => removeItem(item._id)} className="text-gray-400 hover:text-red-500 transition-colors flex-shrink-0 p-2">
-                <FiTrash2 className="w-4 h-4" />
-              </button>
-            </div>
+            <div
+  key={item._id}
+  className="card p-3 sm:p-4 flex flex-col sm:flex-row gap-3 sm:gap-4"
+>
+  {/* Top Section */}
+  <div className="flex items-center gap-3 flex-1 min-w-0">
+    <img
+      src={
+        item.product?.images?.[0] ||
+        "https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=200"
+      }
+      alt={item.product?.name}
+      className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl object-cover flex-shrink-0"
+    />
+
+    <div className="flex-1 min-w-0">
+      <Link
+        to={`/products/${item.product?.slug || "#"}`}
+        className="font-semibold text-gray-900 hover:text-primary-600 transition-colors line-clamp-2 text-sm sm:text-base"
+      >
+        {item.product?.name}
+      </Link>
+
+      <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
+        ₹{item.price} / {item.product?.unit}
+      </p>
+
+      <p className="text-primary-600 font-bold mt-1 text-sm sm:text-base">
+        ₹{(item.price * item.quantity).toFixed(2)}
+      </p>
+    </div>
+  </div>
+
+  {/* Bottom Controls */}
+  <div className="flex items-center justify-between sm:justify-end gap-3">
+    
+    {/* Quantity */}
+    <div className="flex items-center border border-gray-200 rounded-xl overflow-hidden">
+      <button
+        onClick={() => updateItem(item._id, item.quantity - 1)}
+        className="px-3 py-2 hover:bg-gray-50 transition-colors text-gray-600"
+      >
+        <FiMinus className="w-3.5 h-3.5" />
+      </button>
+
+      <span className="px-4 font-semibold text-sm">
+        {item.quantity}
+      </span>
+
+      <button
+        onClick={() => updateItem(item._id, item.quantity + 1)}
+        className="px-3 py-2 hover:bg-gray-50 transition-colors text-gray-600"
+      >
+        <FiPlus className="w-3.5 h-3.5" />
+      </button>
+    </div>
+
+    {/* Delete */}
+    <button
+      onClick={() => removeItem(item._id)}
+      className="text-gray-400 hover:text-red-500 transition-colors p-2"
+    >
+      <FiTrash2 className="w-4 h-4" />
+    </button>
+  </div>
+</div>
           ))}
         </div>
 

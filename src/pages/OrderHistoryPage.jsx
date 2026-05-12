@@ -1,6 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FiPackage, FiChevronRight, FiStar } from 'react-icons/fi';
+import {
+  FiPackage,
+  FiChevronRight,
+  FiStar,
+  FiShoppingBag,
+  FiBox,
+  FiTruck,
+  FiCheckCircle
+} from 'react-icons/fi';
 import { getMyOrders } from '../services/api';
 import { Loader } from '../components/common/Loader';
 import RatingPopup from '../components/common/RatingPopup';
@@ -13,6 +21,117 @@ const STATUS_STYLES = {
   delivered: 'bg-primary-100 text-primary-700',
   cancelled: 'bg-red-100 text-red-700'
 };
+
+const ORDER_STEPS = [
+  { key: 'pending', label: 'Order Placed', Icon: FiShoppingBag },
+  { key: 'confirmed', label: 'Confirmed', Icon: FiBox },
+  { key: 'shipped', label: 'Shipped', Icon: FiTruck },
+  { key: 'delivered', label: 'Delivered', Icon: FiCheckCircle }
+];
+
+const STATUS_TO_STEP_INDEX = {
+  pending: 0,
+  confirmed: 1,
+  processing: 1,
+  shipped: 2,
+  delivered: 3
+};
+
+function OrderStatusTracker({ status }) {
+  if (status === 'cancelled') {
+    return (
+      <div className="rounded-2xl border border-red-100 bg-red-50 px-4 py-3">
+        <p className="text-sm font-semibold text-red-700 capitalize">Order cancelled</p>
+        <p className="text-xs text-red-600 mt-1">This order is no longer being processed.</p>
+      </div>
+    );
+  }
+
+  const activeStepIndex = STATUS_TO_STEP_INDEX[status] ?? 0;
+
+  return (
+    <div className="rounded-2xl bg-sky-50/70 px-4 py-4">
+      <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+
+  {ORDER_STEPS.map((step, index) => {
+    const isCompleted = index <= activeStepIndex;
+    const isCurrent = index === activeStepIndex;
+    const isLast = index === ORDER_STEPS.length - 1;
+
+    return (
+      <div key={step.key} className="relative flex md:flex-1 md:flex-col md:items-center">
+
+        {/* ================= DESKTOP (UNCHANGED) ================= */}
+        <div className="hidden md:flex md:flex-col items-center text-center">
+          <div
+            className={`flex h-12 w-12 items-center justify-center rounded-full border-2 transition-colors ${
+              isCompleted
+                ? 'border-green-200 bg-green-100 text-green-700'
+                : 'border-gray-200 bg-white text-gray-300'
+            } ${isCurrent ? 'ring-4 ring-green-100' : ''}`}
+          >
+            <step.Icon className="h-5 w-5" />
+          </div>
+
+          <p className={`mt-2 text-xs font-semibold ${
+            isCompleted ? 'text-gray-800' : 'text-gray-400'
+          }`}>
+            {step.label}
+          </p>
+
+          {!isLast && (
+            <div className="absolute top-6 left-[60%] w-full h-1 bg-gray-200">
+              <div
+                className={`h-full bg-green-400 transition-all ${
+                  index < activeStepIndex ? 'w-full' : 'w-0'
+                }`}
+              />
+            </div>
+          )}
+        </div>
+
+        {/* ================= MOBILE ================= */}
+        <div className="flex md:hidden items-center w-full relative py-3">
+
+          {/* LEFT LABEL */}
+          <p
+            className={`text-xs font-semibold w-20 text-right pr-2 ${
+              isCompleted ? 'text-green-600' : 'text-gray-400'
+            }`}
+          >
+            {step.label}
+          </p>
+
+          {/* ICON CENTER */}
+          <div
+            className={`relative z-10 flex h-12 w-12 items-center justify-center rounded-full border-2 bg-white ${
+              isCompleted
+                ? 'border-green-500 text-green-700'
+                : 'border-gray-200 text-gray-300'
+            } ${isCurrent ? 'ring-4 ring-green-100' : ''}`}
+          >
+            <step.Icon className="h-5 w-5" />
+          </div>
+
+          {/* VERTICAL CENTER LINE */}
+          {!isLast && (
+            <div className="absolute left-1/2 top-12 -translate-x-1/2 w-0.5 h-14 bg-gray-200">
+              <div
+                className={`w-0.5 bg-green-500 transition-all ${
+                  index < activeStepIndex ? 'h-full' : 'h-0'
+                }`}
+              />
+            </div>
+          )}
+        </div>
+
+      </div>
+    );
+  })}
+</div>
+    </div>
+  );
+}
 
 export default function OrderHistoryPage() {
   const [orders, setOrders] = useState([]);
@@ -68,6 +187,10 @@ export default function OrderHistoryPage() {
                     <FiChevronRight className="w-5 h-5" />
                   </Link>
                 </div>
+              </div>
+
+              <div className="mb-4">
+                <OrderStatusTracker status={order.orderStatus} />
               </div>
 
               <div className="flex items-center gap-3 overflow-x-auto pb-2 mb-4">
