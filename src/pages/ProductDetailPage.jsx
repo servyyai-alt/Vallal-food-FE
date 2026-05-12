@@ -85,11 +85,11 @@ export default function ProductDetailPage() {
       {/* PRODUCT INFO */}
       <div>
         <Link
-          to="/"
+          to="/products"
           className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-primary-600 hover:text-primary-700"
         >
           <FiArrowLeft className="h-4 w-4" />
-          Back to Home
+          Back to Shop
         </Link>
 
         <div className="flex items-center gap-3 mb-2">
