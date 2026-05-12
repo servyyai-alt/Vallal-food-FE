@@ -123,6 +123,7 @@ import Least from '../../assets/Leastactionlogo.png';
 
 const shopAddress = '22, Tharmasalai Veethi, Vadalur, Kurinjipadi Tk, Cuddalore Dt';
 const mapQuery = encodeURIComponent(shopAddress);
+const mapLink = 'https://maps.app.goo.gl/VmBN9BpHYLuLgY4r9';
 
 export default function Footer() {
   const { user, isAdmin } = useAuth();
@@ -242,7 +243,7 @@ export default function Footer() {
                 />
               </div>
               <a
-                href={`https://www.google.com/maps/search/?api=1&query=${mapQuery}`}
+                href={mapLink}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-block font-medium text-primary-400 transition-colors hover:text-primary-300"
