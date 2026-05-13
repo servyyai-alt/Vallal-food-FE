@@ -6,7 +6,7 @@ import { Loader } from '../../components/common/Loader';
 import toast from 'react-hot-toast';
 import { useAdminPanel } from '../../context/AdminPanelContext';
 
-const STATUSES = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
+const STATUSES = ['pending', 'confirmed', 'processing', 'shipped', 'delivered'];
 const STATUS_STYLES = {
   pending: 'bg-yellow-100 text-yellow-700',
   confirmed: 'bg-blue-100 text-blue-700',
@@ -27,9 +27,13 @@ export default function AdminOrders() {
   useEffect(() => { load(); }, []);
 
   const handleStatus = async (id, orderStatus) => {
-    await updateOrderStatus(id, { orderStatus });
-    toast.success('Status updated!');
-    load();
+    try {
+      await updateOrderStatus(id, { orderStatus });
+      toast.success('Status updated!');
+      load();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to update status');
+    }
   };
 
   const keyword = currentSearch.trim().toLowerCase();
@@ -126,10 +130,20 @@ export default function AdminOrders() {
                       </div>
                       <div>
                         <p className="text-xs font-semibold text-gray-500 uppercase mb-2">Update Status</p>
-                        <select value={order.orderStatus} onChange={e => handleStatus(order._id, e.target.value)}
-                          className="input-field text-sm py-2 bg-white">
+                        <select
+                          value={order.orderStatus}
+                          onChange={e => handleStatus(order._id, e.target.value)}
+                          disabled={order.orderStatus === 'cancelled'}
+                          className="input-field text-sm py-2 bg-white disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
+                        >
+                          {order.orderStatus === 'cancelled' && (
+                            <option value="cancelled">Cancelled</option>
+                          )}
                           {STATUSES.map(s => <option key={s} value={s} className="capitalize">{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
                         </select>
+                        {order.orderStatus === 'cancelled' && (
+                          <p className="mt-2 text-xs text-red-500">This order was cancelled by the user and can no longer be changed.</p>
+                        )}
                       </div>
                     </div>
                   </div>

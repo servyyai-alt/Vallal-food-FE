@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FiShoppingCart, FiHeart, FiUser, FiSearch, FiMenu, FiX, FiLogOut, FiPackage, FiSettings } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
@@ -8,11 +8,13 @@ import logo from '../../assets/logo.jpeg';
 export default function Navbar() {
   const { user, logout } = useAuth();
   const { cartCount } = useCart();
+  const location = useLocation();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dropdown, setDropdown] = useState(false);
   const [search, setSearch] = useState('');
   const isAdmin = user?.role === 'admin';
+  const hideNavbarSearch = location.pathname === '/products';
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -34,16 +36,18 @@ export default function Navbar() {
           </Link>
 
           {/* Search Bar */}
-          <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-lg">
-            <div className="relative w-full">
-              <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <input
-                type="text" value={search} onChange={e => setSearch(e.target.value)}
-                placeholder="Search fresh produce, snacks..."
-                className="w-full pl-10 pr-4 py-2.5 bg-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all"
-              />
-            </div>
-          </form>
+          {!hideNavbarSearch && (
+            <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-lg">
+              <div className="relative w-full">
+                <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <input
+                  type="text" value={search} onChange={e => setSearch(e.target.value)}
+                  placeholder="Search fresh produce, snacks..."
+                  className="w-full pl-10 pr-4 py-2.5 bg-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all"
+                />
+              </div>
+            </form>
+          )}
 
           {/* Nav Links */}
           <nav className="hidden md:flex items-center gap-1">

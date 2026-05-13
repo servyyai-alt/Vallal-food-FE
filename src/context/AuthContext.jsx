@@ -6,11 +6,22 @@ const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 const isAdminUser = (user) => user?.role?.toLowerCase() === 'admin';
 
+const readStoredUser = () => {
+  const storedUser = localStorage.getItem('user');
+  if (!storedUser || storedUser === 'undefined' || storedUser === 'null') {
+    return null;
+  }
+
+  try {
+    return JSON.parse(storedUser);
+  } catch {
+    localStorage.removeItem('user');
+    return null;
+  }
+};
+
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
-    const u = localStorage.getItem('user');
-    return u ? JSON.parse(u) : null;
-  });
+  const [user, setUser] = useState(readStoredUser);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {

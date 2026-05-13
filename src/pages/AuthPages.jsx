@@ -71,7 +71,7 @@ export function LoginPage() {
               </button>
             </div>
             <button type="submit" disabled={loading} className="btn-primary w-full py-3 text-base">
-              {loading ? 'Signing in...' : 'Sign In'}
+              {loading ? 'Login...' : 'Log In'}
             </button>
           </form>
           <p className="text-center text-sm text-gray-500 mt-6">

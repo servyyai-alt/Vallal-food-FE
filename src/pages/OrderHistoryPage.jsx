@@ -1,15 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  FiPackage,
-  FiChevronRight,
-  FiStar,
-  FiShoppingBag,
   FiBox,
+  FiCheckCircle,
+  FiChevronRight,
+  FiPackage,
+  FiShoppingBag,
+  FiStar,
   FiTruck,
-  FiCheckCircle
+  FiXCircle
 } from 'react-icons/fi';
-import { getMyOrders } from '../services/api';
+import toast from 'react-hot-toast';
+import { cancelMyOrder, getMyOrders } from '../services/api';
 import { Loader } from '../components/common/Loader';
 import RatingPopup from '../components/common/RatingPopup';
 
@@ -37,12 +39,14 @@ const STATUS_TO_STEP_INDEX = {
   delivered: 3
 };
 
+const CANCELLABLE_STATUSES = ['pending', 'confirmed', 'processing'];
+
 function OrderStatusTracker({ status }) {
   if (status === 'cancelled') {
     return (
       <div className="rounded-2xl border border-red-100 bg-red-50 px-4 py-3">
-        <p className="text-sm font-semibold text-red-700 capitalize">Order cancelled</p>
-        <p className="text-xs text-red-600 mt-1">This order is no longer being processed.</p>
+        <p className="text-sm font-semibold capitalize text-red-700">Order cancelled</p>
+        <p className="mt-1 text-xs text-red-600">This order is no longer being processed.</p>
       </div>
     );
   }
@@ -51,84 +55,63 @@ function OrderStatusTracker({ status }) {
 
   return (
     <div className="rounded-2xl bg-sky-50/70 px-4 py-4">
-      <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+        {ORDER_STEPS.map((step, index) => {
+          const isCompleted = index <= activeStepIndex;
+          const isCurrent = index === activeStepIndex;
+          const isLast = index === ORDER_STEPS.length - 1;
 
-  {ORDER_STEPS.map((step, index) => {
-    const isCompleted = index <= activeStepIndex;
-    const isCurrent = index === activeStepIndex;
-    const isLast = index === ORDER_STEPS.length - 1;
+          return (
+            <div key={step.key} className="relative flex md:flex-1 md:flex-col md:items-center">
+              <div className="hidden items-center text-center md:flex md:flex-col">
+                <div
+                  className={`flex h-12 w-12 items-center justify-center rounded-full border-2 transition-colors ${
+                    isCompleted
+                      ? 'border-green-200 bg-green-100 text-green-700'
+                      : 'border-gray-200 bg-white text-gray-300'
+                  } ${isCurrent ? 'ring-4 ring-green-100' : ''}`}
+                >
+                  <step.Icon className="h-5 w-5" />
+                </div>
 
-    return (
-      <div key={step.key} className="relative flex md:flex-1 md:flex-col md:items-center">
+                <p className={`mt-2 text-xs font-semibold ${isCompleted ? 'text-gray-800' : 'text-gray-400'}`}>
+                  {step.label}
+                </p>
 
-        {/* ================= DESKTOP (UNCHANGED) ================= */}
-        <div className="hidden md:flex md:flex-col items-center text-center">
-          <div
-            className={`flex h-12 w-12 items-center justify-center rounded-full border-2 transition-colors ${
-              isCompleted
-                ? 'border-green-200 bg-green-100 text-green-700'
-                : 'border-gray-200 bg-white text-gray-300'
-            } ${isCurrent ? 'ring-4 ring-green-100' : ''}`}
-          >
-            <step.Icon className="h-5 w-5" />
-          </div>
+                {!isLast && (
+                  <div className="absolute top-6 left-[60%] h-1 w-full bg-gray-200">
+                    <div
+                      className={`h-full bg-green-400 transition-all ${index < activeStepIndex ? 'w-full' : 'w-0'}`}
+                    />
+                  </div>
+                )}
+              </div>
 
-          <p className={`mt-2 text-xs font-semibold ${
-            isCompleted ? 'text-gray-800' : 'text-gray-400'
-          }`}>
-            {step.label}
-          </p>
+              <div className="relative flex w-full items-center py-3 md:hidden">
+                <p className={`w-20 pr-2 text-right text-xs font-semibold ${isCompleted ? 'text-green-600' : 'text-gray-400'}`}>
+                  {step.label}
+                </p>
 
-          {!isLast && (
-            <div className="absolute top-6 left-[60%] w-full h-1 bg-gray-200">
-              <div
-                className={`h-full bg-green-400 transition-all ${
-                  index < activeStepIndex ? 'w-full' : 'w-0'
-                }`}
-              />
+                <div
+                  className={`relative z-10 flex h-12 w-12 items-center justify-center rounded-full border-2 bg-white ${
+                    isCompleted ? 'border-green-500 text-green-700' : 'border-gray-200 text-gray-300'
+                  } ${isCurrent ? 'ring-4 ring-green-100' : ''}`}
+                >
+                  <step.Icon className="h-5 w-5" />
+                </div>
+
+                {!isLast && (
+                  <div className="absolute left-1/2 top-12 h-14 w-0.5 -translate-x-1/2 bg-gray-200">
+                    <div
+                      className={`w-0.5 bg-green-500 transition-all ${index < activeStepIndex ? 'h-full' : 'h-0'}`}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
-          )}
-        </div>
-
-        {/* ================= MOBILE ================= */}
-        <div className="flex md:hidden items-center w-full relative py-3">
-
-          {/* LEFT LABEL */}
-          <p
-            className={`text-xs font-semibold w-20 text-right pr-2 ${
-              isCompleted ? 'text-green-600' : 'text-gray-400'
-            }`}
-          >
-            {step.label}
-          </p>
-
-          {/* ICON CENTER */}
-          <div
-            className={`relative z-10 flex h-12 w-12 items-center justify-center rounded-full border-2 bg-white ${
-              isCompleted
-                ? 'border-green-500 text-green-700'
-                : 'border-gray-200 text-gray-300'
-            } ${isCurrent ? 'ring-4 ring-green-100' : ''}`}
-          >
-            <step.Icon className="h-5 w-5" />
-          </div>
-
-          {/* VERTICAL CENTER LINE */}
-          {!isLast && (
-            <div className="absolute left-1/2 top-12 -translate-x-1/2 w-0.5 h-14 bg-gray-200">
-              <div
-                className={`w-0.5 bg-green-500 transition-all ${
-                  index < activeStepIndex ? 'h-full' : 'h-0'
-                }`}
-              />
-            </div>
-          )}
-        </div>
-
+          );
+        })}
       </div>
-    );
-  })}
-</div>
     </div>
   );
 }
@@ -137,41 +120,57 @@ export default function OrderHistoryPage() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showRatingPopup, setShowRatingPopup] = useState(null);
+  const [cancellingId, setCancellingId] = useState('');
 
   useEffect(() => {
     getMyOrders()
-      .then((r) => {
-        setOrders(r.data.orders);
+      .then(response => {
+        setOrders(response.data.orders || []);
         setLoading(false);
       })
       .catch(() => setLoading(false));
   }, []);
 
+  const handleCancelOrder = async orderId => {
+    if (!confirm('Cancel this order?')) return;
+
+    setCancellingId(orderId);
+    try {
+      const { data } = await cancelMyOrder(orderId);
+      setOrders(current => current.map(order => (order._id === orderId ? data.order : order)));
+      toast.success('Order cancelled');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to cancel order');
+    } finally {
+      setCancellingId('');
+    }
+  };
+
   if (loading) return <Loader size="lg" />;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 animate-fade-in">
-      <h1 className="text-2xl font-bold text-gray-900 mb-8 flex items-center gap-3">
+    <div className="mx-auto max-w-4xl animate-fade-in px-4 py-8">
+      <h1 className="mb-8 flex items-center gap-3 text-2xl font-bold text-gray-900">
         <FiPackage className="text-primary-600" /> My Orders
       </h1>
 
       {orders.length === 0 ? (
-        <div className="text-center py-20">
-          <div className="text-7xl mb-6">📦</div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-3">No orders yet</h2>
-          <p className="text-gray-500 mb-6">Start shopping to see your orders here</p>
-          <Link to="/products" className="btn-primary">Shop Now</Link>
+        <div className="py-20 text-center">
+          <div className="mb-6 text-7xl">No orders</div>
+          <h2 className="mb-3 text-2xl font-bold text-gray-800">No orders yet</h2>
+          <p className="mb-6 text-gray-500">Start shopping to see your orders here</p>
+          <Link to="/products" className="btn-primary">
+            Shop Now
+          </Link>
         </div>
       ) : (
         <div className="space-y-4">
-          {orders.map((order) => (
-            <div key={order._id} className="card p-5 hover:shadow-md transition-shadow">
-              <div className="flex items-start justify-between mb-4">
+          {orders.map(order => (
+            <div key={order._id} className="card p-5 transition-shadow hover:shadow-md">
+              <div className="mb-4 flex items-start justify-between">
                 <div>
-                  <p className="font-semibold text-gray-900 font-mono text-sm">
-                    #{order._id.slice(-8).toUpperCase()}
-                  </p>
-                  <p className="text-sm text-gray-500 mt-0.5">
+                  <p className="font-mono text-sm font-semibold text-gray-900">#{order._id.slice(-8).toUpperCase()}</p>
+                  <p className="mt-0.5 text-sm text-gray-500">
                     {new Date(order.createdAt).toLocaleDateString('en-IN', {
                       day: 'numeric',
                       month: 'long',
@@ -179,12 +178,13 @@ export default function OrderHistoryPage() {
                     })}
                   </p>
                 </div>
+
                 <div className="flex items-center gap-3">
-                  <span className={`text-xs font-semibold px-3 py-1 rounded-full capitalize ${STATUS_STYLES[order.orderStatus]}`}>
+                  <span className={`rounded-full px-3 py-1 text-xs font-semibold capitalize ${STATUS_STYLES[order.orderStatus]}`}>
                     {order.orderStatus}
                   </span>
-                  <Link to={`/orders/${order._id}`} className="text-primary-600 hover:text-primary-700 transition-colors">
-                    <FiChevronRight className="w-5 h-5" />
+                  <Link to={`/orders/${order._id}`} className="text-primary-600 transition-colors hover:text-primary-700">
+                    <FiChevronRight className="h-5 w-5" />
                   </Link>
                 </div>
               </div>
@@ -193,18 +193,19 @@ export default function OrderHistoryPage() {
                 <OrderStatusTracker status={order.orderStatus} />
               </div>
 
-              <div className="flex items-center gap-3 overflow-x-auto pb-2 mb-4">
-                {order.orderItems.slice(0, 4).map((item, i) => (
-                  <div key={i} className="flex-shrink-0">
+              <div className="mb-4 flex items-center gap-3 overflow-x-auto pb-2">
+                {order.orderItems.slice(0, 4).map((item, index) => (
+                  <div key={index} className="flex-shrink-0">
                     <img
                       src={item.image || 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=80'}
                       alt={item.name}
-                      className="w-14 h-14 rounded-xl object-cover bg-gray-100"
+                      className="h-14 w-14 rounded-xl bg-gray-100 object-cover"
                     />
                   </div>
                 ))}
+
                 {order.orderItems.length > 4 && (
-                  <div className="w-14 h-14 rounded-xl bg-gray-100 flex items-center justify-center text-sm font-semibold text-gray-500 flex-shrink-0">
+                  <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-xl bg-gray-100 text-sm font-semibold text-gray-500">
                     +{order.orderItems.length - 4}
                   </div>
                 )}
@@ -212,13 +213,13 @@ export default function OrderHistoryPage() {
 
               {order.orderStatus === 'delivered' && (
                 <div className="mb-4 space-y-2">
-                  {order.orderItems.map((item, i) => {
+                  {order.orderItems.map((item, index) => {
                     const product = item.product;
                     const canRate = product && typeof product !== 'string';
 
                     return (
                       <div
-                        key={`${order._id}-${i}`}
+                        key={`${order._id}-${index}`}
                         className="flex items-center justify-between gap-3 rounded-xl bg-gray-50 px-3 py-2"
                       >
                         <div className="min-w-0">
@@ -229,9 +230,9 @@ export default function OrderHistoryPage() {
                         {canRate && (
                           <button
                             onClick={() => setShowRatingPopup(product)}
-                            className="text-xs font-semibold px-3 py-1 rounded-full bg-yellow-100 text-yellow-700 hover:bg-yellow-200 transition flex items-center gap-1"
+                            className="flex items-center gap-1 rounded-full bg-yellow-100 px-3 py-1 text-xs font-semibold text-yellow-700 transition hover:bg-yellow-200"
                           >
-                            <FiStar className="w-3 h-3" /> Rate
+                            <FiStar className="h-3 w-3" /> Rate
                           </button>
                         )}
                       </div>
@@ -244,19 +245,28 @@ export default function OrderHistoryPage() {
                 <p className="text-gray-500">
                   {order.orderItems.length} item{order.orderItems.length > 1 ? 's' : ''} · {order.paymentMethod.toUpperCase()}
                 </p>
-                <p className="font-bold text-gray-900 text-base">₹{order.totalPrice}</p>
+
+                <div className="flex items-center gap-3">
+                  {CANCELLABLE_STATUSES.includes(order.orderStatus) && (
+                    <button
+                      onClick={() => handleCancelOrder(order._id)}
+                      disabled={cancellingId === order._id}
+                      className="inline-flex items-center gap-1 rounded-full bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      <FiXCircle className="h-3.5 w-3.5" />
+                      {cancellingId === order._id ? 'Cancelling...' : 'Cancel Order'}
+                    </button>
+                  )}
+
+                  <p className="text-base font-bold text-gray-900">Rs {order.totalPrice}</p>
+                </div>
               </div>
             </div>
           ))}
         </div>
       )}
 
-      {showRatingPopup && (
-        <RatingPopup
-          product={showRatingPopup}
-          onClose={() => setShowRatingPopup(null)}
-        />
-      )}
+      {showRatingPopup && <RatingPopup product={showRatingPopup} onClose={() => setShowRatingPopup(null)} />}
     </div>
   );
 }

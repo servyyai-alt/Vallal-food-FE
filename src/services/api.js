@@ -41,7 +41,8 @@ export const getMyReview = (productId) => API.get(`/products/${productId}/my-rev
 export const getAllProductsAdmin = () => API.get('/products/admin/all');
 
 // Categories
-export const getCategories = () => API.get('/categories');
+export const getCategories = (params) => API.get('/categories', { params });
+export const getAllCategoriesAdmin = () => API.get('/categories/admin/all');
 export const createCategory = (data) => API.post('/categories', data);
 export const updateCategory = (id, data) => API.put(`/categories/${id}`, data);
 export const deleteCategory = (id) => API.delete(`/categories/${id}`);
@@ -62,6 +63,7 @@ export const createOrder = (data) => API.post('/orders', data);
 export const verifyPayment = (data) => API.post('/orders/verify-payment', data);
 export const getMyOrders = () => API.get('/orders/my-orders');
 export const getOrderById = (id) => API.get(`/orders/${id}`);
+export const cancelMyOrder = (id) => API.put(`/orders/${id}/cancel`);
 export const getAllOrders = () => API.get('/orders/admin/all');
 export const updateOrderStatus = (id, data) => API.put(`/orders/${id}/status`, data);
 export const getDashboardStats = () => API.get('/orders/admin/dashboard');

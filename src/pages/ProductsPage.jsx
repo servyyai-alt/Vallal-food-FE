@@ -1,18 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { FiFilter, FiX, FiSearch } from 'react-icons/fi';
-import { getProducts, getCategories } from '../services/api';
+import { FiFilter, FiSearch, FiX } from 'react-icons/fi';
+import { getCategories, getProducts } from '../services/api';
 import ProductCard from '../components/common/ProductCard';
 
 function ProductsSkeleton() {
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4">
       {Array.from({ length: 8 }).map((_, i) => (
-        <div key={i} className="rounded-2xl border border-gray-200 p-4 animate-pulse bg-white">
-          <div className="h-40 bg-gray-200 rounded-xl mb-4" />
-          <div className="h-4 bg-gray-200 rounded w-3/4 mb-3" />
-          <div className="h-4 bg-gray-200 rounded w-1/2 mb-3" />
-          <div className="h-10 bg-gray-200 rounded-xl" />
+        <div key={i} className="rounded-2xl border border-gray-200 bg-white p-4 animate-pulse">
+          <div className="mb-4 h-40 rounded-xl bg-gray-200" />
+          <div className="mb-3 h-4 w-3/4 rounded bg-gray-200" />
+          <div className="mb-3 h-4 w-1/2 rounded bg-gray-200" />
+          <div className="h-10 rounded-xl bg-gray-200" />
         </div>
       ))}
     </div>
@@ -22,13 +22,13 @@ function ProductsSkeleton() {
 function PageLoading() {
   return (
     <div className="flex gap-6">
-      <aside className="hidden md:block w-56 flex-shrink-0">
-        <div className="card p-5 sticky top-24 animate-pulse">
-          <div className="h-6 bg-gray-200 rounded mb-5" />
-          <div className="h-10 bg-gray-200 rounded mb-3" />
-          <div className="h-10 bg-gray-200 rounded mb-3" />
-          <div className="h-10 bg-gray-200 rounded mb-3" />
-          <div className="h-10 bg-gray-200 rounded" />
+      <aside className="hidden w-56 flex-shrink-0 md:block">
+        <div className="card sticky top-24 p-5 animate-pulse">
+          <div className="mb-5 h-6 rounded bg-gray-200" />
+          <div className="mb-3 h-10 rounded bg-gray-200" />
+          <div className="mb-3 h-10 rounded bg-gray-200" />
+          <div className="mb-3 h-10 rounded bg-gray-200" />
+          <div className="h-10 rounded bg-gray-200" />
         </div>
       </aside>
 
@@ -39,6 +39,15 @@ function PageLoading() {
   );
 }
 
+const getFiltersFromParams = searchParams => ({
+  search: searchParams.get('search') || '',
+  category: searchParams.get('category') || '',
+  minPrice: searchParams.get('minPrice') || '',
+  maxPrice: searchParams.get('maxPrice') || '',
+  rating: searchParams.get('rating') || '',
+  sort: searchParams.get('sort') || ''
+});
+
 export default function ProductsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [products, setProducts] = useState([]);
@@ -46,35 +55,59 @@ export default function ProductsPage() {
   const [loading, setLoading] = useState(true);
   const [pageReady, setPageReady] = useState(false);
   const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(Number(searchParams.get('page') || 1));
   const [pages, setPages] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
-
-  const [filters, setFilters] = useState({
-    search: searchParams.get('search') || '',
-    category: searchParams.get('category') || '',
-    minPrice: '',
-    maxPrice: '',
-    rating: '',
-    sort: ''
-  });
+  const [filters, setFilters] = useState(() => getFiltersFromParams(searchParams));
   const [priceDraft, setPriceDraft] = useState({
-    minPrice: '',
-    maxPrice: ''
+    minPrice: searchParams.get('minPrice') || '',
+    maxPrice: searchParams.get('maxPrice') || ''
   });
 
   useEffect(() => {
     getCategories()
-      .then(r => setCategories(r.data.categories))
+      .then(response => setCategories(response.data.categories || []))
       .catch(() => {});
   }, []);
 
   useEffect(() => {
-    setPriceDraft({
-      minPrice: filters.minPrice,
-      maxPrice: filters.maxPrice
+    const nextFilters = getFiltersFromParams(searchParams);
+    const nextPage = Number(searchParams.get('page') || 1);
+
+    setFilters(current => {
+      const unchanged = Object.keys(nextFilters).every(key => current[key] === nextFilters[key]);
+      return unchanged ? current : nextFilters;
     });
-  }, [filters.minPrice, filters.maxPrice]);
+
+    setPriceDraft(current => {
+      if (current.minPrice === nextFilters.minPrice && current.maxPrice === nextFilters.maxPrice) {
+        return current;
+      }
+
+      return {
+        minPrice: nextFilters.minPrice,
+        maxPrice: nextFilters.maxPrice
+      };
+    });
+
+    setPage(current => (current === nextPage ? current : nextPage));
+  }, [searchParams]);
+
+  useEffect(() => {
+    const nextParams = new URLSearchParams();
+
+    if (filters.search) nextParams.set('search', filters.search);
+    if (filters.category) nextParams.set('category', filters.category);
+    if (filters.minPrice) nextParams.set('minPrice', filters.minPrice);
+    if (filters.maxPrice) nextParams.set('maxPrice', filters.maxPrice);
+    if (filters.rating) nextParams.set('rating', filters.rating);
+    if (filters.sort) nextParams.set('sort', filters.sort);
+    if (page > 1) nextParams.set('page', String(page));
+
+    if (searchParams.toString() !== nextParams.toString()) {
+      setSearchParams(nextParams, { replace: true });
+    }
+  }, [filters, page, searchParams, setSearchParams]);
 
   useEffect(() => {
     let active = true;
@@ -94,9 +127,9 @@ export default function ProductsPage() {
         const { data } = await getProducts(params);
         if (!active) return;
 
-        setProducts(data.products);
-        setTotal(data.total);
-        setPages(data.pages);
+        setProducts(data.products || []);
+        setTotal(data.total || 0);
+        setPages(data.pages || 1);
       } catch {
         if (!active) return;
         setProducts([]);
@@ -117,7 +150,7 @@ export default function ProductsPage() {
   }, [filters, page]);
 
   const updateFilter = (key, value) => {
-    setFilters(f => ({ ...f, [key]: value }));
+    setFilters(current => ({ ...current, [key]: value }));
     setPage(1);
   };
 
@@ -138,8 +171,8 @@ export default function ProductsPage() {
   };
 
   const applyPriceFilter = () => {
-    setFilters(f => ({
-      ...f,
+    setFilters(current => ({
+      ...current,
       minPrice: priceDraft.minPrice,
       maxPrice: priceDraft.maxPrice
     }));
@@ -149,96 +182,98 @@ export default function ProductsPage() {
   const renderFilterPanel = () => (
     <div className="space-y-6">
       <div>
-        <h3 className="font-semibold text-gray-800 mb-3">Price Range</h3>
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="block text-xs font-medium text-gray-500 mb-2">Min Price</label>
-            <input
-              type="number"
-              min="0"
-              placeholder="₹0"
-              value={priceDraft.minPrice}
-              onChange={e => setPriceDraft(draft => ({ ...draft, minPrice: e.target.value }))}
-              className="input-field text-sm py-2"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-medium text-gray-500 mb-2">Max Price</label>
-            <input
-              type="number"
-              min="0"
-              placeholder="₹1000"
-              value={priceDraft.maxPrice}
-              onChange={e => setPriceDraft(draft => ({ ...draft, maxPrice: e.target.value }))}
-              className="input-field text-sm py-2"
-            />
-          </div>
-        </div>
-
-        <button onClick={applyPriceFilter} className="w-full btn-primary text-sm py-2 mt-3">
-          Apply Price Filter
-        </button>
-      </div>
-
-      <div>
-        <h3 className="font-semibold text-gray-800 mb-3">Min Rating</h3>
+        <h3 className="mb-3 font-semibold text-gray-800">Categories</h3>
         <div className="space-y-2">
-          {[4, 3, 2].map(r => (
+          <button
+            onClick={() => updateFilter('category', '')}
+            className={`block w-full rounded-lg px-3 py-2 text-left text-sm transition-colors ${
+              !filters.category
+                ? 'bg-primary-100 font-semibold text-primary-700'
+                : 'text-gray-600 hover:bg-gray-100'
+            }`}
+          >
+            All Categories
+          </button>
+
+          {categories.map(category => (
             <button
-              key={r}
-              onClick={() => updateFilter('rating', filters.rating == r ? '' : r)}
-              className={`block w-full text-left text-sm px-3 py-2 rounded-lg transition-colors ${
-                filters.rating == r
-                  ? 'bg-primary-100 text-primary-700 font-semibold'
-                  : 'hover:bg-gray-100 text-gray-600'
+              key={category._id}
+              onClick={() => updateFilter('category', category._id)}
+              className={`block w-full rounded-lg px-3 py-2 text-left text-sm transition-colors ${
+                filters.category === category._id
+                  ? 'bg-primary-100 font-semibold text-primary-700'
+                  : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
-              {'⭐'.repeat(r)} & above
+              {category.name}
             </button>
           ))}
         </div>
       </div>
 
-      <button onClick={clearFilters} className="w-full btn-outline text-sm py-2">
+      <div>
+        <h3 className="mb-3 font-semibold text-gray-800">Price Range</h3>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="mb-2 block text-xs font-medium text-gray-500">Min Price</label>
+            <input
+              type="number"
+              min="0"
+              placeholder="Rs 0"
+              value={priceDraft.minPrice}
+              onChange={e => setPriceDraft(current => ({ ...current, minPrice: e.target.value }))}
+              className="input-field py-2 text-sm"
+            />
+          </div>
+
+          <div>
+            <label className="mb-2 block text-xs font-medium text-gray-500">Max Price</label>
+            <input
+              type="number"
+              min="0"
+              placeholder="Rs 1000"
+              value={priceDraft.maxPrice}
+              onChange={e => setPriceDraft(current => ({ ...current, maxPrice: e.target.value }))}
+              className="input-field py-2 text-sm"
+            />
+          </div>
+        </div>
+
+        <button onClick={applyPriceFilter} className="btn-primary mt-3 w-full py-2 text-sm">
+          Apply Price Filter
+        </button>
+      </div>
+{/* 
+      <div>
+        <h3 className="mb-3 font-semibold text-gray-800">Min Rating</h3>
+        <div className="space-y-2">
+          {[4, 3, 2].map(rating => (
+            <button
+              key={rating}
+              onClick={() => updateFilter('rating', filters.rating == rating ? '' : String(rating))}
+              className={`block w-full rounded-lg px-3 py-2 text-left text-sm transition-colors ${
+                filters.rating == rating
+                  ? 'bg-primary-100 font-semibold text-primary-700'
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              {'*'.repeat(rating)} & above
+            </button>
+          ))}
+        </div>
+      </div> */}
+
+      <button onClick={clearFilters} className="btn-outline w-full py-2 text-sm">
         Clear All Filters
       </button>
     </div>
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="flex flex-col gap-4 mb-6 md:flex-row md:items-center md:justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">
-          {filters.search ? `Results for "${filters.search}"` : 'Fresh Groceries'}
-          <span className="text-gray-400 text-lg font-normal ml-2">({total})</span>
-        </h1>
-
-        <div className="flex items-center gap-3 w-full md:w-auto">
-          <select
-            value={filters.sort}
-            onChange={e => updateFilter('sort', e.target.value)}
-            className="input-field flex-1 md:w-auto text-sm py-2"
-          >
-            <option value="">Sort By</option>
-            <option value="price_asc">Price: Low to High</option>
-            <option value="price_desc">Price: High to Low</option>
-            <option value="rating">Top Rated</option>
-            <option value="name">Name A-Z</option>
-          </select>
-
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="md:hidden flex items-center gap-2 btn-outline text-sm py-2 px-4 whitespace-nowrap"
-          >
-            <FiFilter /> Filters
-          </button>
-        </div>
-      </div>
-
-      <div className="md:hidden mb-4">
+    <div className="mx-auto max-w-7xl px-4 py-8">
+      <div className="mb-4">
         <div className="relative">
-          <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <FiSearch className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
           <input
             type="text"
             placeholder="Search products..."
@@ -249,24 +284,50 @@ export default function ProductsPage() {
         </div>
       </div>
 
+      <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <h1 className="text-2xl font-bold text-gray-900">
+          {filters.search ? `Results for "${filters.search}"` : 'Vallal Food Products'}
+          <span className="ml-2 text-lg font-normal text-gray-400">({total})</span>
+        </h1>
+
+        <div className="flex w-full items-center gap-3 md:w-auto">
+          <select
+            value={filters.sort}
+            onChange={e => updateFilter('sort', e.target.value)}
+            className="input-field flex-1 py-2 text-sm md:w-auto"
+          >
+            <option value="">Sort By</option>
+            <option value="price_asc">Price: Low to High</option>
+            <option value="price_desc">Price: High to Low</option>
+            <option value="rating">Top Rated</option>
+            <option value="name">Name A-Z</option>
+          </select>
+
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="btn-outline flex items-center gap-2 whitespace-nowrap px-4 py-2 text-sm md:hidden"
+          >
+            <FiFilter /> Filters
+          </button>
+        </div>
+      </div>
+
       {loading && !pageReady ? (
         <PageLoading />
       ) : (
         <div className="flex gap-6">
-          <aside className="hidden md:block w-56 flex-shrink-0">
-            <div className="card p-5 sticky top-24">
-              {renderFilterPanel()}
-            </div>
+          <aside className="hidden w-56 flex-shrink-0 md:block">
+            <div className="card sticky top-24 p-5">{renderFilterPanel()}</div>
           </aside>
 
           {showFilters && (
             <div className="fixed inset-0 z-50 md:hidden">
               <div className="absolute inset-0 bg-black/50" onClick={() => setShowFilters(false)} />
-              <div className="absolute right-0 top-0 bottom-0 w-72 bg-white p-6 overflow-y-auto animate-slide-up">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="font-bold text-lg">Filters</h2>
+              <div className="absolute right-0 top-0 bottom-0 w-72 overflow-y-auto bg-white p-6 animate-slide-up">
+                <div className="mb-6 flex items-center justify-between">
+                  <h2 className="text-lg font-bold">Filters</h2>
                   <button onClick={() => setShowFilters(false)}>
-                    <FiX className="w-5 h-5" />
+                    <FiX className="h-5 w-5" />
                   </button>
                 </div>
                 {renderFilterPanel()}
@@ -278,34 +339,34 @@ export default function ProductsPage() {
             {loading ? (
               <ProductsSkeleton />
             ) : products.length === 0 ? (
-              <div className="text-center py-20">
-                <div className="text-6xl mb-4">🌿</div>
-                <p className="text-gray-500 text-lg">No products found</p>
+              <div className="py-20 text-center">
+                <div className="mb-4 text-6xl">No items</div>
+                <p className="text-lg text-gray-500">No products found</p>
                 <button onClick={clearFilters} className="btn-primary mt-4">
                   Clear Filters
                 </button>
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                  {products.map(p => (
-                    <ProductCard key={p._id} product={p} />
+                <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4">
+                  {products.map(product => (
+                    <ProductCard key={product._id} product={product} />
                   ))}
                 </div>
 
                 {pages > 1 && (
-                  <div className="flex justify-center gap-2 mt-8">
-                    {Array.from({ length: pages }, (_, i) => i + 1).map(p => (
+                  <div className="mt-8 flex justify-center gap-2">
+                    {Array.from({ length: pages }, (_, i) => i + 1).map(pageNumber => (
                       <button
-                        key={p}
-                        onClick={() => setPage(p)}
-                        className={`w-10 h-10 rounded-xl font-semibold text-sm transition-colors ${
-                          p === page
+                        key={pageNumber}
+                        onClick={() => setPage(pageNumber)}
+                        className={`h-10 w-10 rounded-xl text-sm font-semibold transition-colors ${
+                          pageNumber === page
                             ? 'bg-primary-600 text-white'
-                            : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
+                            : 'border border-gray-200 bg-white text-gray-700 hover:bg-gray-100'
                         }`}
                       >
-                        {p}
+                        {pageNumber}
                       </button>
                     ))}
                   </div>
