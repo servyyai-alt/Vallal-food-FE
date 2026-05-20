@@ -122,8 +122,9 @@ import logo from '../../assets/logo.jpeg';
 import Least from '../../assets/Leastactionlogo.png';
 
 const shopAddress = '22, Tharmasalai Veethi, Vadalur, Kurinjipadi Tk, Cuddalore Dt';
-const mapQuery = encodeURIComponent(shopAddress);
-const mapLink = 'https://maps.app.goo.gl/VmBN9BpHYLuLgY4r9';
+const mapLink = 'https://maps.app.goo.gl/137Yu2pm63YamufUA';
+const mapEmbedSrc =
+  'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1378.544063872822!2d79.54780413919642!3d11.551652266064428!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a54b79a9f017ca7%3A0x81568e92875d18b3!2sVallal%20Food%20Products!5e1!3m2!1sen!2sin!4v1779268982720!5m2!1sen!2sin';
 
 export default function Footer() {
   const { user, isAdmin } = useAuth();
@@ -236,10 +237,11 @@ export default function Footer() {
               <div className="overflow-hidden rounded-2xl border border-gray-800">
                 <iframe
                   title="Vallal Food Shop Location"
-                  src={`https://www.google.com/maps?q=${mapQuery}&output=embed`}
+                  src={mapEmbedSrc}
                   className="h-56 w-full"
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
+                  allowFullScreen
                 />
               </div>
               <a
