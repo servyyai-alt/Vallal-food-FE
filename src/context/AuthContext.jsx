@@ -50,8 +50,9 @@ export const AuthProvider = ({ children }) => {
       toast.success(`Welcome back, ${data.user.name}!`);
       return { success: true, role: data.user?.role, user: data.user };
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Login failed');
-      return { success: false };
+      const message = err.response?.data?.message || 'Login failed';
+      toast.error(message);
+      return { success: false, message };
     } finally { setLoading(false); }
   };
 

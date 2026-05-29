@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { FiGrid, FiPackage, FiShoppingBag, FiUsers, FiTag, FiLogOut, FiMenu, FiUser, FiBell, FiSearch } from 'react-icons/fi';
+import { FiGrid, FiPackage, FiShoppingBag, FiUsers, FiTag, FiLogOut, FiMenu, FiUser, FiBell, FiSearch, FiMail } from 'react-icons/fi';
 import { FaHome } from "react-icons/fa";
 import { useAuth } from '../../context/AuthContext';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -11,6 +11,7 @@ const NAV = [
   { to: '/admin/categories', icon: <FiTag />, label: 'Categories' },
   { to: '/admin/orders', icon: <FiPackage />, label: 'Orders' },
   { to: '/admin/users', icon: <FiUsers />, label: 'Users' },
+  { to: '/admin/messages', icon: <FiMail />, label: 'Messages' },
   { to: '/', icon: <FaHome  />, label: 'home' }
 
 ];

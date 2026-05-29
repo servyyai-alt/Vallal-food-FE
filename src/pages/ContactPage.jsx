@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { FiMail, FiPhone, FiClock, FiSend } from 'react-icons/fi';
 import toast from 'react-hot-toast';
+import { createSupportMessage } from '../services/api';
 
 export default function ContactPage() {
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
@@ -9,10 +10,16 @@ export default function ContactPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSending(true);
-    await new Promise(r => setTimeout(r, 1200));
-    toast.success('Message sent! We\'ll get back to you within 24 hours.');
-    setForm({ name: '', email: '', subject: '', message: '' });
-    setSending(false);
+
+    try {
+      await createSupportMessage(form);
+      toast.success('Message sent! We\'ll get back to you within 24 hours.');
+      setForm({ name: '', email: '', subject: '', message: '' });
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to send message');
+    } finally {
+      setSending(false);
+    }
   };
 
   return (

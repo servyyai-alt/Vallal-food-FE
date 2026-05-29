@@ -14,7 +14,13 @@ API.interceptors.request.use(config => {
 API.interceptors.response.use(
   res => res,
   err => {
-    if (err.response?.status === 401) {
+    const requestUrl = err.config?.url || '';
+    const hasToken = Boolean(localStorage.getItem('token'));
+    const isAuthRequest =
+      requestUrl.includes('/auth/login') ||
+      requestUrl.includes('/auth/register');
+
+    if (err.response?.status === 401 && hasToken && !isAuthRequest) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       window.location.href = '/login';
@@ -72,6 +78,10 @@ export const getDashboardStats = () => API.get('/orders/admin/dashboard');
 export const getAllUsers = () => API.get('/users');
 export const updateUser = (id, data) => API.put(`/users/${id}`, data);
 export const deleteUser = (id) => API.delete(`/users/${id}`);
+
+// Support Messages
+export const createSupportMessage = (data) => API.post('/support-messages', data);
+export const getAllSupportMessages = () => API.get('/support-messages/admin/all');
 
 // Upload
 export const uploadImage = (file) => {

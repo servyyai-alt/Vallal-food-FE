@@ -9,7 +9,8 @@ const SEARCH_PLACEHOLDERS = {
   '/admin/products': 'Search products, categories, tags...',
   '/admin/categories': 'Search categories or records...',
   '/admin/orders': 'Search order ID, customer, phone, product, status...',
-  '/admin/users': 'Search users, phone, email, role...'
+  '/admin/users': 'Search users, phone, email, role...',
+  '/admin/messages': 'Search messages, subject, customer name, email...'
 };
 
 const STORAGE_KEY = 'vallal_admin_notifications';

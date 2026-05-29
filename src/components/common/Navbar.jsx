@@ -52,7 +52,9 @@ export default function Navbar() {
           {/* Nav Links */}
           <nav className="hidden md:flex items-center gap-1">
             <Link to="/" className="text-sm font-medium text-gray-600 hover:text-primary-600 px-3 py-2 rounded-lg hover:bg-primary-50 transition-all">Home</Link>
+            
             <Link to="/products" className="text-sm font-medium text-gray-600 hover:text-primary-600 px-3 py-2 rounded-lg hover:bg-primary-50 transition-all">Shop</Link>
+            <Link to="/contact" className="text-sm font-medium text-gray-600 hover:text-primary-600 px-3 py-2 rounded-lg hover:bg-primary-50 transition-all">Contact Support</Link>
             {user && !isAdmin && (
               <>
                 <Link to="/wishlist" className="relative p-2 text-gray-600 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-all">
@@ -177,6 +179,13 @@ export default function Navbar() {
       className="block py-2 text-gray-700 font-medium"
     >
       Shop
+    </Link>
+    <Link
+      to="/contact"
+      onClick={() => setMobileOpen(false)}
+      className="block py-2 text-gray-700 font-medium"
+    >
+      Contact Support
     </Link>
 
     {user ? (
