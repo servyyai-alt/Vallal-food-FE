@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /login
+Disallow: /register
+Disallow: /cart
+Disallow: /checkout
+Disallow: /orders
+Disallow: /profile
+Disallow: /wishlist
+Disallow: /order-confirmation
+Disallow: /payment-demo
+
+Sitemap: http://localhost:5173/sitemap.xml

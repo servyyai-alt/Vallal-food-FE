@@ -186,6 +186,7 @@ import { useAuth } from '../../context/AuthContext';
 import { toggleWishlist } from '../../services/api';
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import { trackEvent } from '../../services/analytics';
 
 export default function ProductCard({ product }) {
   const { addToCart, cart, increaseQty, decreaseQty } = useCart();
@@ -241,6 +242,8 @@ export default function ProductCard({ product }) {
           <img
             src={product.images?.[0] || 'https://via.placeholder.com/300'}
             alt={product.name}
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
           />
 
@@ -327,6 +330,12 @@ export default function ProductCard({ product }) {
                 <button
                   onClick={(e) => {
                     e.preventDefault();
+                    trackEvent('add_to_cart', {
+                      currency: 'INR',
+                      value: Number(product.price) || 0,
+                      item_name: product.name,
+                      item_id: product._id
+                    });
                     addToCart(product._id);
                   }}
                   className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg text-sm flex items-center gap-1 active:scale-95"

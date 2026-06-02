@@ -3,6 +3,7 @@ import { FiUser, FiLock, FiSave, FiEye, FiEyeOff } from 'react-icons/fi';
 import { updateProfile, changePassword } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
+import Seo from '../components/seo/Seo';
 
 export default function ProfilePage() {
   const { user, refreshUser } = useAuth();
@@ -90,6 +91,7 @@ export default function ProfilePage() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8 animate-fade-in">
+      <Seo title="My Profile" description="Manage your Vallal Food Products account profile." path="/profile" robots="noindex,nofollow" />
 
       <h1 className="text-2xl font-bold text-gray-900 mb-8">
         My Profile

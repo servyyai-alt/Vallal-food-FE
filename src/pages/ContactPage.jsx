@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { FiMail, FiPhone, FiClock, FiSend } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { createSupportMessage } from '../services/api';
+import Seo from '../components/seo/Seo';
+import { buildBreadcrumbSchema, buildLocalBusinessSchema } from '../seo/schema';
+import { trackEvent } from '../services/analytics';
 
 export default function ContactPage() {
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
@@ -13,6 +16,9 @@ export default function ContactPage() {
 
     try {
       await createSupportMessage(form);
+      trackEvent('contact_form_submit', {
+        subject: form.subject || 'General Inquiry'
+      });
       toast.success('Message sent! We\'ll get back to you within 24 hours.');
       setForm({ name: '', email: '', subject: '', message: '' });
     } catch (error) {
@@ -24,6 +30,16 @@ export default function ContactPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-16 animate-fade-in">
+      <Seo
+        title="Contact Vallal Food Products"
+        description="Contact Vallal Food Products for support, delivery questions, payment issues, and product inquiries."
+        keywords="contact Vallal Food Products, customer support, grocery delivery support, Vallal phone number"
+        path="/contact"
+        schema={[
+          buildLocalBusinessSchema(),
+          buildBreadcrumbSchema([{ name: 'Home', path: '/' }, { name: 'Contact', path: '/contact' }])
+        ]}
+      />
       <div className="text-center mb-12">
         <p className="text-primary-600 font-semibold text-sm mb-2">Get in Touch</p>
         <h1 className="text-4xl font-bold text-gray-900 mb-3">We're Here to Help</h1>

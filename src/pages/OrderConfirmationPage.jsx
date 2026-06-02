@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useLocation } from 'react-router-dom';
 import { FiCheckCircle, FiPackage, FiHome } from 'react-icons/fi';
 import { getOrderById } from '../services/api';
 import { Loader } from '../components/common/Loader';
+import Seo from '../components/seo/Seo';
 
 export default function OrderConfirmationPage() {
   const { id } = useParams();
+  const { pathname } = useLocation();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -18,6 +20,7 @@ export default function OrderConfirmationPage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-16 text-center animate-fade-in">
+      <Seo title="Order Confirmation" description="View your Vallal Food Products order confirmation." path={pathname} robots="noindex,nofollow" />
       <div className="card p-10">
         <div className="w-20 h-20 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-6">
           <FiCheckCircle className="w-10 h-10 text-primary-600" />
@@ -30,7 +33,7 @@ export default function OrderConfirmationPage() {
         <div className="bg-gray-50 rounded-2xl p-5 mb-6 text-left space-y-3">
           {order.orderItems.map((item, i) => (
             <div key={i} className="flex items-center gap-3">
-              <img src={item.image || 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=80'} alt={item.name} className="w-12 h-12 rounded-xl object-cover bg-white" />
+              <img src={item.image || 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=80'} alt={item.name} loading="lazy" decoding="async" className="w-12 h-12 rounded-xl object-cover bg-white" />
               <div className="flex-1">
                 <p className="font-medium text-gray-900 text-sm">{item.name}</p>
                 <p className="text-xs text-gray-500">Qty: {item.quantity} × ₹{item.price}</p>

@@ -4,6 +4,7 @@ import { FiMinus, FiPlus, FiTrash2, FiShoppingBag, FiArrowRight } from 'react-ic
 import { useCart } from '../context/CartContext';
 import { getStoreSettings } from '../services/api';
 import { calculatePricing, DEFAULT_STORE_SETTINGS } from '../utils/pricing';
+import Seo from '../components/seo/Seo';
 
 export default function CartPage() {
   const { cart, updateItem, removeItem, clearCart } = useCart();
@@ -31,6 +32,7 @@ export default function CartPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 animate-fade-in">
+      <Seo title="Cart" description="Review items in your Vallal Food Products cart." path="/cart" robots="noindex,nofollow" />
       <div className="flex flex-col gap-4 mb-8 md:flex-row md:items-center md:justify-between">
   
   {/* First Line - Heading */}

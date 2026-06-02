@@ -4,6 +4,7 @@ import { FaHome } from "react-icons/fa";
 import { useAuth } from '../../context/AuthContext';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useAdminPanel } from '../../context/AdminPanelContext';
+import Seo from '../seo/Seo';
 import logo from '../../assets/logo.jpeg';
 const NAV = [
   { to: '/admin/dashboard', icon: <FiGrid />, label: 'Dashboard' },
@@ -104,6 +105,7 @@ export default function AdminLayout({ children }) {
 
   return (
     <div className="flex h-screen bg-gray-50">
+      <Seo title={`${pageTitle} Admin`} description="Internal Vallal Food Products admin panel." path={pathname} robots="noindex,nofollow" />
       {/* Desktop Sidebar */}
       <aside className="hidden md:flex w-60 flex-col flex-shrink-0"><Sidebar /></aside>
 

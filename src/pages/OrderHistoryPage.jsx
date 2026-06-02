@@ -14,6 +14,7 @@ import toast from 'react-hot-toast';
 import { cancelMyOrder, getMyOrders } from '../services/api';
 import { Loader } from '../components/common/Loader';
 import RatingPopup from '../components/common/RatingPopup';
+import Seo from '../components/seo/Seo';
 
 const STATUS_STYLES = {
   pending: 'bg-yellow-100 text-yellow-700',
@@ -150,6 +151,7 @@ export default function OrderHistoryPage() {
 
   return (
     <div className="mx-auto max-w-4xl animate-fade-in px-4 py-8">
+      <Seo title="My Orders" description="Review your Vallal Food Products order history." path="/orders" robots="noindex,nofollow" />
       <h1 className="mb-8 flex items-center gap-3 text-2xl font-bold text-gray-900">
         <FiPackage className="text-primary-600" /> My Orders
       </h1>
@@ -199,6 +201,8 @@ export default function OrderHistoryPage() {
                     <img
                       src={item.image || 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=80'}
                       alt={item.name}
+                      loading="lazy"
+                      decoding="async"
                       className="h-14 w-14 rounded-xl bg-gray-100 object-cover"
                     />
                   </div>

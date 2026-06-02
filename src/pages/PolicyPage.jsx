@@ -1,4 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
+import Seo from '../components/seo/Seo';
+import { buildBreadcrumbSchema } from '../seo/schema';
 
 const policies = {
   '/privacy-policy': {
@@ -193,6 +195,18 @@ export default function PolicyPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-10 md:py-14">
+      <Seo
+        title={policy.title}
+        description={policy.intro}
+        keywords={`${policy.title}, Vallal Food Products policies, legal pages`}
+        path={pathname}
+        schema={[
+          buildBreadcrumbSchema([
+            { name: 'Home', path: '/' },
+            { name: policy.title, path: pathname }
+          ])
+        ]}
+      />
       <div className="mb-8">
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary-600">Legal</p>
         <h1 className="mt-3 text-3xl md:text-4xl font-bold text-gray-900">{policy.title}</h1>

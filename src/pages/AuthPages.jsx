@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import logo from '../assets/logo.jpeg';
+import Seo from '../components/seo/Seo';
+import { trackEvent } from '../services/analytics';
 
 export function LoginPage() {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -26,6 +28,9 @@ export function LoginPage() {
     }
 
     const adminLogin = res.user?.role?.toLowerCase() === 'admin' || res.role?.toLowerCase() === 'admin';
+    trackEvent('login', {
+      method: 'email'
+    });
     navigate(adminLogin ? '/admin/dashboard' : '/', { replace: true });
   };
 
@@ -38,6 +43,7 @@ export function LoginPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 to-white flex items-center justify-center p-4">
+      <Seo title="Login" description="Login to your Vallal Food Products account." path="/login" robots="noindex,nofollow" />
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2 mb-6">
@@ -123,11 +129,17 @@ export function RegisterPage() {
     e.preventDefault();
     if (form.password !== form.confirmPassword) { alert('Passwords do not match'); return; }
     const res = await register(form.name, form.email, form.password);
-    if (res.success) navigate('/');
+    if (res.success) {
+      trackEvent('sign_up', {
+        method: 'email'
+      });
+      navigate('/');
+    }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 to-white flex items-center justify-center p-4">
+      <Seo title="Register" description="Create your Vallal Food Products account." path="/register" robots="noindex,nofollow" />
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2 mb-6">

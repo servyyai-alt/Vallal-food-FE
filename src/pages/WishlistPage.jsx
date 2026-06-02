@@ -5,6 +5,7 @@ import { getWishlist, toggleWishlist } from '../services/api';
 import { useCart } from '../context/CartContext';
 import { Loader } from '../components/common/Loader';
 import toast from 'react-hot-toast';
+import Seo from '../components/seo/Seo';
 
 export default function WishlistPage() {
   const [wishlist, setWishlist] = useState([]);
@@ -25,6 +26,7 @@ export default function WishlistPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 animate-fade-in">
+      <Seo title="Wishlist" description="Saved items in your Vallal Food Products wishlist." path="/wishlist" robots="noindex,nofollow" />
       <h1 className="text-2xl font-bold text-gray-900 mb-8 flex items-center gap-3">
         <FiHeart className="text-red-500 w-6 h-6" />
         My Wishlist
@@ -48,6 +50,8 @@ export default function WishlistPage() {
                 <img
                   src={product.images?.[0] || 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=400'}
                   alt={product.name}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 <button

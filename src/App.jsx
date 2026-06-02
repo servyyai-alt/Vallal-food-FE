@@ -1,40 +1,41 @@
-import { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Suspense, lazy, useEffect } from 'react';
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { FaWhatsapp } from 'react-icons/fa';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { AdminPanelProvider } from './context/AdminPanelContext';
 import { ProtectedRoute, AdminRoute } from './routes/ProtectedRoute';
+import { Loader } from './components/common/Loader';
+import { AnalyticsScripts, RouteAnalytics } from './components/seo/RouteAnalytics';
+import Seo from './components/seo/Seo';
 import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
 
-// Pages
-import HomePage from './pages/HomePage';
-import ProductsPage from './pages/ProductsPage';
-import ProductDetailPage from './pages/ProductDetailPage';
-import { LoginPage, RegisterPage } from './pages/AuthPages';
-import CartPage from './pages/CartPage';
-import WishlistPage from './pages/WishlistPage';
-import CheckoutPage from './pages/CheckoutPage';
-import OrderConfirmationPage from './pages/OrderConfirmationPage';
-import OrderHistoryPage from './pages/OrderHistoryPage';
-import ProfilePage from './pages/ProfilePage';
-import ContactPage from './pages/ContactPage';
-import PolicyPage from './pages/PolicyPage';
-import RazorpayDemoPage from './pages/RazorpayDemoPage';
-
-// Admin
-import AdminDashboard from './pages/admin/AdminDashboard';
-import AdminProducts from './pages/admin/AdminProducts';
-import AdminCategories from './pages/admin/AdminCategories';
-import AdminOrders from './pages/admin/AdminOrders';
-import AdminUsers from './pages/admin/AdminUsers';
-import AdminMessages from './pages/admin/AdminMessages';
+const HomePage = lazy(() => import('./pages/HomePage'));
+const ProductsPage = lazy(() => import('./pages/ProductsPage'));
+const ProductDetailPage = lazy(() => import('./pages/ProductDetailPage'));
+const LoginPage = lazy(() => import('./pages/AuthPages').then((module) => ({ default: module.LoginPage })));
+const RegisterPage = lazy(() => import('./pages/AuthPages').then((module) => ({ default: module.RegisterPage })));
+const CartPage = lazy(() => import('./pages/CartPage'));
+const WishlistPage = lazy(() => import('./pages/WishlistPage'));
+const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
+const OrderConfirmationPage = lazy(() => import('./pages/OrderConfirmationPage'));
+const OrderHistoryPage = lazy(() => import('./pages/OrderHistoryPage'));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
+const ContactPage = lazy(() => import('./pages/ContactPage'));
+const PolicyPage = lazy(() => import('./pages/PolicyPage'));
+const RazorpayDemoPage = lazy(() => import('./pages/RazorpayDemoPage'));
+const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
+const AdminProducts = lazy(() => import('./pages/admin/AdminProducts'));
+const AdminCategories = lazy(() => import('./pages/admin/AdminCategories'));
+const AdminOrders = lazy(() => import('./pages/admin/AdminOrders'));
+const AdminUsers = lazy(() => import('./pages/admin/AdminUsers'));
+const AdminMessages = lazy(() => import('./pages/admin/AdminMessages'));
 
 function Layout({ children }) {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex min-h-screen flex-col">
       <Navbar />
       <main className="flex-1">{children}</main>
       <Footer />
@@ -72,64 +73,83 @@ function AdminShell({ children }) {
   return <AdminPanelProvider>{children}</AdminPanelProvider>;
 }
 
+function RouteFallback() {
+  return (
+    <div className="flex min-h-[50vh] items-center justify-center">
+      <Loader size="lg" />
+    </div>
+  );
+}
+
 export default function App() {
   return (
     <BrowserRouter>
       <ScrollToTop />
+      <RouteAnalytics />
       <AuthProvider>
         <CartProvider>
-          <Toaster position="top-right" toastOptions={{
-            style: { borderRadius: '12px', fontFamily: 'Outfit, sans-serif', fontSize: '14px' },
-            success: { iconTheme: { primary: '#16a34a', secondary: '#fff' } }
-          }} />
+          <AnalyticsScripts />
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              style: { borderRadius: '12px', fontFamily: 'Outfit, sans-serif', fontSize: '14px' },
+              success: { iconTheme: { primary: '#16a34a', secondary: '#fff' } }
+            }}
+          />
           <WhatsAppButton />
-          <Routes>
-            {/* Public routes with Navbar + Footer */}
-            <Route path="/" element={<Layout><HomePage /></Layout>} />
-            <Route path="/products" element={<Layout><ProductsPage /></Layout>} />
-            <Route path="/products/:slug" element={<Layout><ProductDetailPage /></Layout>} />
-            <Route path="/contact" element={<Layout><ContactPage /></Layout>} />
-            <Route path="/payment-demo" element={<Layout><RazorpayDemoPage /></Layout>} />
-            <Route path="/privacy-policy" element={<Layout><PolicyPage /></Layout>} />
-            <Route path="/terms-and-conditions" element={<Layout><PolicyPage /></Layout>} />
-            <Route path="/refund-cancellation-policy" element={<Layout><PolicyPage /></Layout>} />
-            <Route path="/safety-guidelines" element={<Layout><PolicyPage /></Layout>} />
-            <Route path="/user-verification-policy" element={<Layout><PolicyPage /></Layout>} />
+          <Suspense fallback={<RouteFallback />}>
+            <Routes>
+              <Route path="/" element={<Layout><HomePage /></Layout>} />
+              <Route path="/products" element={<Layout><ProductsPage /></Layout>} />
+              <Route path="/products/:slug" element={<Layout><ProductDetailPage /></Layout>} />
+              <Route path="/contact" element={<Layout><ContactPage /></Layout>} />
+              <Route path="/payment-demo" element={<Layout><RazorpayDemoPage /></Layout>} />
+              <Route path="/privacy-policy" element={<Layout><PolicyPage /></Layout>} />
+              <Route path="/terms-and-conditions" element={<Layout><PolicyPage /></Layout>} />
+              <Route path="/refund-cancellation-policy" element={<Layout><PolicyPage /></Layout>} />
+              <Route path="/safety-guidelines" element={<Layout><PolicyPage /></Layout>} />
+              <Route path="/user-verification-policy" element={<Layout><PolicyPage /></Layout>} />
 
-            {/* Auth routes (no nav/footer) */}
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
 
-            {/* Protected user routes */}
-            <Route path="/cart" element={<Layout><ProtectedRoute><CartPage /></ProtectedRoute></Layout>} />
-            <Route path="/wishlist" element={<Layout><ProtectedRoute><WishlistPage /></ProtectedRoute></Layout>} />
-            <Route path="/checkout" element={<Layout><ProtectedRoute><CheckoutPage /></ProtectedRoute></Layout>} />
-            <Route path="/order-confirmation/:id" element={<Layout><ProtectedRoute><OrderConfirmationPage /></ProtectedRoute></Layout>} />
-            <Route path="/orders" element={<Layout><ProtectedRoute><OrderHistoryPage /></ProtectedRoute></Layout>} />
-            <Route path="/orders/:id" element={<Layout><ProtectedRoute><OrderConfirmationPage /></ProtectedRoute></Layout>} />
-            <Route path="/profile" element={<Layout><ProtectedRoute><ProfilePage /></ProtectedRoute></Layout>} />
+              <Route path="/cart" element={<Layout><ProtectedRoute><CartPage /></ProtectedRoute></Layout>} />
+              <Route path="/wishlist" element={<Layout><ProtectedRoute><WishlistPage /></ProtectedRoute></Layout>} />
+              <Route path="/checkout" element={<Layout><ProtectedRoute><CheckoutPage /></ProtectedRoute></Layout>} />
+              <Route path="/order-confirmation/:id" element={<Layout><ProtectedRoute><OrderConfirmationPage /></ProtectedRoute></Layout>} />
+              <Route path="/orders" element={<Layout><ProtectedRoute><OrderHistoryPage /></ProtectedRoute></Layout>} />
+              <Route path="/orders/:id" element={<Layout><ProtectedRoute><OrderConfirmationPage /></ProtectedRoute></Layout>} />
+              <Route path="/profile" element={<Layout><ProtectedRoute><ProfilePage /></ProtectedRoute></Layout>} />
 
-            {/* Admin routes (no shared nav/footer, have own layout) */}
-            <Route path="/admin" element={<AdminRoute><AdminShell><Navigate to="/admin/dashboard" replace /></AdminShell></AdminRoute>} />
-            <Route path="/admin/dashboard" element={<AdminRoute><AdminShell><AdminDashboard /></AdminShell></AdminRoute>} />
-            <Route path="/admin/products" element={<AdminRoute><AdminShell><AdminProducts /></AdminShell></AdminRoute>} />
-            <Route path="/admin/categories" element={<AdminRoute><AdminShell><AdminCategories /></AdminShell></AdminRoute>} />
-            <Route path="/admin/orders" element={<AdminRoute><AdminShell><AdminOrders /></AdminShell></AdminRoute>} />
-            <Route path="/admin/users" element={<AdminRoute><AdminShell><AdminUsers /></AdminShell></AdminRoute>} />
-            <Route path="/admin/messages" element={<AdminRoute><AdminShell><AdminMessages /></AdminShell></AdminRoute>} />
+              <Route path="/admin" element={<AdminRoute><AdminShell><Navigate to="/admin/dashboard" replace /></AdminShell></AdminRoute>} />
+              <Route path="/admin/dashboard" element={<AdminRoute><AdminShell><AdminDashboard /></AdminShell></AdminRoute>} />
+              <Route path="/admin/products" element={<AdminRoute><AdminShell><AdminProducts /></AdminShell></AdminRoute>} />
+              <Route path="/admin/categories" element={<AdminRoute><AdminShell><AdminCategories /></AdminShell></AdminRoute>} />
+              <Route path="/admin/orders" element={<AdminRoute><AdminShell><AdminOrders /></AdminShell></AdminRoute>} />
+              <Route path="/admin/users" element={<AdminRoute><AdminShell><AdminUsers /></AdminShell></AdminRoute>} />
+              <Route path="/admin/messages" element={<AdminRoute><AdminShell><AdminMessages /></AdminShell></AdminRoute>} />
 
-            {/* 404 */}
-            <Route path="*" element={
-              <Layout>
-                <div className="min-h-[60vh] flex flex-col items-center justify-center text-center">
-                  <div className="text-7xl mb-4">🥦</div>
-                  <h2 className="text-3xl font-bold text-gray-800 mb-2">Page Not Found</h2>
-                  <p className="text-gray-500 mb-6">The page you're looking for doesn't exist.</p>
-                  <a href="/" className="btn-primary">Go Home</a>
-                </div>
-              </Layout>
-            } />
-          </Routes>
+              <Route
+                path="*"
+                element={
+                  <Layout>
+                    <Seo
+                      title="Page Not Found"
+                      description="The page you requested could not be found on Vallal Food Products."
+                      path={typeof window !== 'undefined' ? window.location.pathname : '/404'}
+                      robots="noindex,nofollow"
+                    />
+                    <div className="min-h-[60vh] flex flex-col items-center justify-center text-center">
+                      <div className="mb-4 text-7xl">ðŸ¥¦</div>
+                      <h2 className="mb-2 text-3xl font-bold text-gray-800">Page Not Found</h2>
+                      <p className="mb-6 text-gray-500">The page you're looking for doesn't exist.</p>
+                      <a href="/" className="btn-primary">Go Home</a>
+                    </div>
+                  </Layout>
+                }
+              />
+            </Routes>
+          </Suspense>
         </CartProvider>
       </AuthProvider>
     </BrowserRouter>

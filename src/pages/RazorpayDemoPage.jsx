@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import RazorpayCheckoutButton from '../components/payment/RazorpayCheckoutButton';
+import Seo from '../components/seo/Seo';
 
 export default function RazorpayDemoPage() {
   const [paymentResult, setPaymentResult] = useState(null);
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12">
+      <Seo title="Payment Demo" description="Internal Razorpay integration demo page." path="/payment-demo" robots="noindex,nofollow" />
       <div className="rounded-3xl border border-gray-200 bg-white p-8 shadow-sm">
         <p className="mb-2 text-sm font-semibold uppercase tracking-[0.3em] text-primary-600">Payment Demo</p>
         <h1 className="mb-3 text-3xl font-bold text-gray-900">Razorpay React Integration</h1>

@@ -3,6 +3,8 @@ import { useSearchParams } from 'react-router-dom';
 import { FiFilter, FiSearch, FiX } from 'react-icons/fi';
 import { getCategories, getProducts } from '../services/api';
 import ProductCard from '../components/common/ProductCard';
+import Seo from '../components/seo/Seo';
+import { buildBreadcrumbSchema } from '../seo/schema';
 
 function ProductsSkeleton() {
   return (
@@ -63,6 +65,13 @@ export default function ProductsPage() {
     minPrice: searchParams.get('minPrice') || '',
     maxPrice: searchParams.get('maxPrice') || ''
   });
+  const hasIndexBlockingFilters = Boolean(
+    filters.search || filters.category || filters.minPrice || filters.maxPrice || filters.rating || filters.sort || page > 1
+  );
+  const breadcrumbSchema = buildBreadcrumbSchema([
+    { name: 'Home', path: '/' },
+    { name: 'Products', path: '/products' }
+  ]);
 
   useEffect(() => {
     getCategories()
@@ -271,6 +280,16 @@ export default function ProductsPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8">
+      <Seo
+        title={filters.search ? `Search results for ${filters.search}` : 'Browse Products'}
+        description={filters.search
+          ? `Browse search results for ${filters.search} on Vallal Food Products.`
+          : 'Browse Vallal Food Products for homemade foods, natural staples, and fresh grocery items.'}
+        keywords="Vallal products, homemade foods, grocery catalog, natural food products, fresh groceries"
+        path="/products"
+        robots={hasIndexBlockingFilters ? 'noindex,follow' : undefined}
+        schema={[breadcrumbSchema]}
+      />
       <div className="mb-4">
         <div className="relative">
           <FiSearch className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />

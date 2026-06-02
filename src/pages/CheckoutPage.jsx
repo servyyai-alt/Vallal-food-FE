@@ -6,6 +6,8 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 import { calculatePricing, DEFAULT_STORE_SETTINGS } from '../utils/pricing';
+import Seo from '../components/seo/Seo';
+import { trackEvent } from '../services/analytics';
 
 const RAZORPAY_SCRIPT_URL = 'https://checkout.razorpay.com/v1/checkout.js';
 
@@ -64,6 +66,11 @@ export default function CheckoutPage() {
       console.log("✅ SENDING ORDER DATA:", { orderItems, shippingAddress: address, paymentMethod });
 
       if (paymentMethod === 'razorpay') {
+        trackEvent('begin_checkout', {
+          currency: 'INR',
+          value: total,
+          payment_method: 'razorpay'
+        });
         const isLoaded = await loadRazorpayScript();
         if (!isLoaded) {
           throw new Error('Unable to load Razorpay Checkout');
@@ -88,6 +95,12 @@ export default function CheckoutPage() {
                 shippingAddress: address,
                 ...response
               });
+              trackEvent('purchase', {
+                transaction_id: verifyRes.data.order._id,
+                currency: 'INR',
+                value: verifyRes.data.order.totalPrice,
+                payment_method: 'razorpay'
+              });
               clearCart();
               navigate(`/order-confirmation/${verifyRes.data.order._id}`);
             } catch {
@@ -108,10 +121,21 @@ export default function CheckoutPage() {
         rzp.open();
         return;
       } else {
+        trackEvent('begin_checkout', {
+          currency: 'INR',
+          value: total,
+          payment_method: 'cod'
+        });
         const { data } = await createOrder({
           orderItems,
           shippingAddress: address,
           paymentMethod
+        });
+        trackEvent('purchase', {
+          transaction_id: data.order._id,
+          currency: 'INR',
+          value: data.order.totalPrice,
+          payment_method: 'cod'
         });
         clearCart();
         navigate(`/order-confirmation/${data.order._id}`);
@@ -126,6 +150,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 animate-fade-in">
+      <Seo title="Checkout" description="Complete your Vallal Food Products order checkout." path="/checkout" robots="noindex,nofollow" />
       <h1 className="text-2xl font-bold text-gray-900 mb-8 flex items-center gap-2">
         <FiLock className="text-primary-600" /> Secure Checkout
       </h1>

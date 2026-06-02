@@ -7,6 +7,9 @@ import { useAuth } from '../context/AuthContext';
 import { Loader } from '../components/common/Loader';
 import RecommendedProductsSection from '../components/common/RecommendedProductsSection';
 import toast from 'react-hot-toast';
+import Seo from '../components/seo/Seo';
+import { buildBreadcrumbSchema, buildProductSchema } from '../seo/schema';
+import { trackEvent } from '../services/analytics';
 
 export default function ProductDetailPage() {
   const { slug } = useParams();
@@ -31,6 +34,17 @@ export default function ProductDetailPage() {
       })
       .catch(() => setLoading(false));
   }, [slug]);
+
+  useEffect(() => {
+    if (!product?._id) return;
+
+    trackEvent('view_item', {
+      currency: 'INR',
+      value: Number(product.price) || 0,
+      item_name: product.name,
+      item_id: product._id
+    });
+  }, [product?._id, product?.name, product?.price]);
 
   useEffect(() => {
     if (!user?.wishlist || !product?._id) {
@@ -113,6 +127,13 @@ export default function ProductDetailPage() {
 
   const handleAddToCart = () => {
     if (isAdmin) return;
+    trackEvent('add_to_cart', {
+      currency: 'INR',
+      value: (Number(product.price) || 0) * qty,
+      item_name: product.name,
+      item_id: product._id,
+      quantity: qty
+    });
     addToCart(product._id, qty);
   };
 
@@ -139,11 +160,29 @@ export default function ProductDetailPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-10">
+      <Seo
+        title={product.name}
+        description={product.description}
+        keywords={`${product.name}, ${product.category?.name || 'food product'}, Vallal Food Products`}
+        path={`/products/${product.slug}`}
+        image={product.images?.[0]}
+        type="product"
+        schema={[
+          buildBreadcrumbSchema([
+            { name: 'Home', path: '/' },
+            { name: 'Products', path: '/products' },
+            { name: product.name, path: `/products/${product.slug}` }
+          ]),
+          buildProductSchema(product)
+        ]}
+      />
       <div className="grid md:grid-cols-2 gap-10">
         <div>
           <img
             src={product.images?.[0]}
             alt={product.name}
+            loading="eager"
+            decoding="async"
             className="w-full h-[550px] rounded-2xl "
           />
         </div>
