@@ -52,8 +52,9 @@ export default function Navbar() {
           {/* Nav Links */}
           <nav className="hidden md:flex items-center gap-1">
             <Link to="/" className="text-sm font-medium text-gray-600 hover:text-primary-600 px-3 py-2 rounded-lg hover:bg-primary-50 transition-all">Home</Link>
-            
+            <Link to="/about" className="text-sm font-medium text-gray-600 hover:text-primary-600 px-3 py-2 rounded-lg hover:bg-primary-50 transition-all">About</Link>
             <Link to="/products" className="text-sm font-medium text-gray-600 hover:text-primary-600 px-3 py-2 rounded-lg hover:bg-primary-50 transition-all">Shop</Link>
+            <Link to="/categories" className="text-sm font-medium text-gray-600 hover:text-primary-600 px-3 py-2 rounded-lg hover:bg-primary-50 transition-all">Categories</Link>
             <Link to="/contact" className="text-sm font-medium text-gray-600 hover:text-primary-600 px-3 py-2 rounded-lg hover:bg-primary-50 transition-all">Contact Support</Link>
             {user && !isAdmin && (
               <>
@@ -174,11 +175,26 @@ export default function Navbar() {
     </Link>
 
     <Link
+      to="/about"
+      onClick={() => setMobileOpen(false)}
+      className="block py-2 text-gray-700 font-medium"
+    >
+      About
+    </Link>
+
+    <Link
       to="/products"
       onClick={() => setMobileOpen(false)}
       className="block py-2 text-gray-700 font-medium"
     >
       Shop
+    </Link>
+    <Link
+      to="/categories"
+      onClick={() => setMobileOpen(false)}
+      className="block py-2 text-gray-700 font-medium"
+    >
+      Categories
     </Link>
     <Link
       to="/contact"

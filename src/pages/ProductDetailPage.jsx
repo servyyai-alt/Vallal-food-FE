@@ -198,7 +198,7 @@ export default function ProductDetailPage() {
 
           <div className="flex items-center gap-3 mb-2">
             <Link
-              to={`/products?category=${product.category?._id}`}
+              to={product.category?.slug ? `/categories/${product.category.slug}` : '/categories'}
               className="text-sm text-green-600 font-semibold"
             >
               {product.category?.name}

@@ -13,6 +13,9 @@ import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
 
 const HomePage = lazy(() => import('./pages/HomePage'));
+const AboutPage = lazy(() => import('./pages/AboutPage'));
+const CategoriesPage = lazy(() => import('./pages/CategoriesPage'));
+const CategoryDetailPage = lazy(() => import('./pages/CategoryDetailPage'));
 const ProductsPage = lazy(() => import('./pages/ProductsPage'));
 const ProductDetailPage = lazy(() => import('./pages/ProductDetailPage'));
 const LoginPage = lazy(() => import('./pages/AuthPages').then((module) => ({ default: module.LoginPage })));
@@ -100,8 +103,11 @@ export default function App() {
           <Suspense fallback={<RouteFallback />}>
             <Routes>
               <Route path="/" element={<Layout><HomePage /></Layout>} />
+              <Route path="/about" element={<Layout><AboutPage /></Layout>} />
               <Route path="/products" element={<Layout><ProductsPage /></Layout>} />
               <Route path="/products/:slug" element={<Layout><ProductDetailPage /></Layout>} />
+              <Route path="/categories" element={<Layout><CategoriesPage /></Layout>} />
+              <Route path="/categories/:slug" element={<Layout><CategoryDetailPage /></Layout>} />
               <Route path="/contact" element={<Layout><ContactPage /></Layout>} />
               <Route path="/payment-demo" element={<Layout><RazorpayDemoPage /></Layout>} />
               <Route path="/privacy-policy" element={<Layout><PolicyPage /></Layout>} />

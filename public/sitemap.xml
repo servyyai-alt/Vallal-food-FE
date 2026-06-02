@@ -1,58 +1,126 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
-    <loc>http://localhost:5173/</loc>
+    <loc>https://www.vallalfoods.com/</loc>
+    <lastmod>2026-06-02T11:50:03.194Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>http://localhost:5173/products</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <loc>https://www.vallalfoods.com/about</loc>
+    <lastmod>2026-06-02T11:50:03.194Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>http://localhost:5173/contact</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <loc>https://www.vallalfoods.com/contact</loc>
+    <lastmod>2026-06-02T11:50:03.194Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>http://localhost:5173/privacy-policy</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <loc>https://www.vallalfoods.com/products</loc>
+    <lastmod>2026-06-02T11:50:03.194Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
   </url>
   <url>
-    <loc>http://localhost:5173/terms-and-conditions</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>http://localhost:5173/refund-cancellation-policy</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>http://localhost:5173/safety-guidelines</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>http://localhost:5173/user-verification-policy</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>http://localhost:5173/products/sesame-candy-</loc>
+    <loc>https://www.vallalfoods.com/categories</loc>
+    <lastmod>2026-06-02T11:50:03.194Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>http://localhost:5173/products/nannari-sarbath</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://www.vallalfoods.com/privacy-policy</loc>
+    <lastmod>2026-06-02T11:50:03.194Z</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
   </url>
   <url>
-    <loc>http://localhost:5173/products/honey-amla---</loc>
+    <loc>https://www.vallalfoods.com/terms-and-conditions</loc>
+    <lastmod>2026-06-02T11:50:03.194Z</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://www.vallalfoods.com/refund-cancellation-policy</loc>
+    <lastmod>2026-06-02T11:50:03.194Z</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://www.vallalfoods.com/safety-guidelines</loc>
+    <lastmod>2026-06-02T11:50:03.194Z</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://www.vallalfoods.com/user-verification-policy</loc>
+    <lastmod>2026-06-02T11:50:03.194Z</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://www.vallalfoods.com/categories/pickles-(%E0%AE%8A%E0%AE%B1%E0%AF%81%E0%AE%95%E0%AE%BE%E0%AE%AF%E0%AF%8D)</loc>
+    <lastmod>2026-05-08T10:00:45.996Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.vallalfoods.com/categories/%E0%AE%9A%E0%AE%B0%E0%AF%8D%E0%AE%AA%E0%AE%A4%E0%AF%8D-(sarbath)</loc>
+    <lastmod>2026-05-08T10:03:28.405Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.vallalfoods.com/categories/bakery</loc>
+    <lastmod>2026-05-11T12:22:43.558Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400</image:loc>
+      <image:title>Bakery</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.vallalfoods.com/categories/snacks</loc>
+    <lastmod>2026-05-13T06:02:03.024Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1599490659213-e2b9527bd087?w=400</image:loc>
+      <image:title>Snacks</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.vallalfoods.com/products/sesame-candy-</loc>
+    <lastmod>2026-06-02T09:27:49.422Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/dl8u9wdn9/image/upload/v1778234823/vallal-products/fuunwxc8uqgjsjc2fyfp.jpg</image:loc>
+      <image:title>Sesame candy(எள்ளு மிட்டாய்)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.vallalfoods.com/products/nannari-sarbath</loc>
+    <lastmod>2026-05-12T07:00:45.121Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/dl8u9wdn9/image/upload/v1778234704/vallal-products/gfeuh9ovydqzktyundk8.jpg</image:loc>
+      <image:title>Nannari Sarbath</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.vallalfoods.com/products/honey-amla---</loc>
+    <lastmod>2026-05-12T12:02:40.909Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/dl8u9wdn9/image/upload/v1778234235/vallal-products/l7lgtqumcpvhfgu3sz8e.jpg</image:loc>
+      <image:title>Honey Amla ( தேன் நெல்லி)</image:title>
+    </image:image>
   </url>
 </urlset>

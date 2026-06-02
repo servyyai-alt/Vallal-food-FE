@@ -41,12 +41,12 @@ export const getSiteUrl = () => {
     return window.location.origin.replace(/\/+$/, '');
   }
 
-  return 'http://localhost:5173';
+  return 'https://www.vallalfoods.com';
 };
 
 export const toAbsoluteUrl = (path = '/') => {
   if (!path) return getSiteUrl();
   if (/^https?:\/\//i.test(path)) return path;
   const normalizedPath = path.startsWith('/') ? path : `/${path}`;
-  return `${getSiteUrl()}${normalizedPath}`;
+  return new URL(normalizedPath, `${getSiteUrl()}/`).toString();
 };

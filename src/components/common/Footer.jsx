@@ -147,7 +147,9 @@ export default function Footer() {
             <ul className="space-y-2 text-sm">
               {[
                 ['/', 'Home'],
+                ['/about', 'About Us'],
                 ['/products', 'Shop All'],
+                ['/categories', 'Categories']
               ].map(([to, label]) => (
                 <li key={to}>
                   <Link to={to} className="transition-colors hover:text-primary-400">

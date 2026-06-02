@@ -32,18 +32,20 @@ const env = {
   ...process.env
 };
 
-const siteUrl = (env.VITE_SITE_URL || 'http://localhost:5173').replace(/\/+$/, '');
+const siteUrl = (env.VITE_SITE_URL || 'https://www.vallalfoods.com').replace(/\/+$/, '');
 const apiUrl = (env.VITE_API_URL || 'http://localhost:5000/api').replace(/\/+$/, '');
 
-const staticRoutes = [
-  '/',
-  '/products',
-  '/contact',
-  '/privacy-policy',
-  '/terms-and-conditions',
-  '/refund-cancellation-policy',
-  '/safety-guidelines',
-  '/user-verification-policy'
+const staticPages = [
+  { path: '/', changefreq: 'daily', priority: '1.0' },
+  { path: '/about', changefreq: 'monthly', priority: '0.8' },
+  { path: '/contact', changefreq: 'monthly', priority: '0.8' },
+  { path: '/products', changefreq: 'daily', priority: '0.9' },
+  { path: '/categories', changefreq: 'weekly', priority: '0.8' },
+  { path: '/privacy-policy', changefreq: 'yearly', priority: '0.4' },
+  { path: '/terms-and-conditions', changefreq: 'yearly', priority: '0.4' },
+  { path: '/refund-cancellation-policy', changefreq: 'yearly', priority: '0.4' },
+  { path: '/safety-guidelines', changefreq: 'yearly', priority: '0.4' },
+  { path: '/user-verification-policy', changefreq: 'yearly', priority: '0.4' }
 ];
 
 const disallowRoutes = [
@@ -59,7 +61,26 @@ const disallowRoutes = [
   '/payment-demo'
 ];
 
-const fetchProductUrls = async () => {
+const xmlEscape = (value = '') =>
+  String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+
+const toAbsoluteUrl = (value = '') => {
+  if (!value) return '';
+  if (/^https?:\/\//i.test(value)) return value;
+  return new URL(value.startsWith('/') ? value : `/${value}`, `${siteUrl}/`).toString();
+};
+
+const toLastmod = (value) => {
+  if (!value) return new Date().toISOString();
+  return new Date(value).toISOString();
+};
+
+const fetchAllProducts = async () => {
   try {
     const firstPage = await fetch(`${apiUrl}/products?page=1&limit=200`);
     if (!firstPage.ok) {
@@ -77,29 +98,97 @@ const fetchProductUrls = async () => {
       allProducts.push(...(data.products || []));
     }
 
-    return allProducts
-      .filter((product) => product?.slug)
-      .map((product) => `/products/${product.slug}`);
+    return allProducts;
   } catch (error) {
     console.warn('[seo] Could not fetch dynamic product URLs for sitemap:', error.message);
     return [];
   }
 };
 
-const toXmlUrlEntry = (route) => `  <url>
-    <loc>${siteUrl}${route}</loc>
-    <changefreq>${route === '/' ? 'daily' : 'weekly'}</changefreq>
-    <priority>${route === '/' ? '1.0' : route.startsWith('/products/') ? '0.8' : '0.7'}</priority>
-  </url>`;
+const fetchCategories = async () => {
+  try {
+    const response = await fetch(`${apiUrl}/categories`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch categories: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.categories || [];
+  } catch (error) {
+    console.warn('[seo] Could not fetch dynamic category URLs for sitemap:', error.message);
+    return [];
+  }
+};
+
+const buildImageNodes = (images = [], title = '') => {
+  const uniqueImages = [...new Set(images.filter(Boolean))];
+
+  return uniqueImages
+    .map((imageUrl) => {
+      const absoluteImageUrl = toAbsoluteUrl(imageUrl);
+      if (!absoluteImageUrl) return '';
+
+      return [
+        '    <image:image>',
+        `      <image:loc>${xmlEscape(absoluteImageUrl)}</image:loc>`,
+        title ? `      <image:title>${xmlEscape(title)}</image:title>` : '',
+        '    </image:image>'
+      ]
+        .filter(Boolean)
+        .join('\n');
+    })
+    .filter(Boolean)
+    .join('\n');
+};
+
+const toXmlUrlEntry = ({ path: route, lastmod, changefreq, priority, images, imageTitle }) => {
+  const imageNodes = buildImageNodes(images, imageTitle);
+
+  return [
+    '  <url>',
+    `    <loc>${xmlEscape(toAbsoluteUrl(route))}</loc>`,
+    `    <lastmod>${xmlEscape(toLastmod(lastmod))}</lastmod>`,
+    `    <changefreq>${xmlEscape(changefreq)}</changefreq>`,
+    `    <priority>${xmlEscape(priority)}</priority>`,
+    imageNodes,
+    '  </url>'
+  ]
+    .filter(Boolean)
+    .join('\n');
+};
 
 await fs.mkdir(publicDir, { recursive: true });
 
-const dynamicProductRoutes = await fetchProductUrls();
-const sitemapRoutes = [...new Set([...staticRoutes, ...dynamicProductRoutes])];
+const [products, categories] = await Promise.all([fetchAllProducts(), fetchCategories()]);
+
+const sitemapEntries = [
+  ...staticPages.map((page) => ({ ...page, lastmod: new Date() })),
+  ...categories
+    .filter((category) => category?.slug)
+    .map((category) => ({
+      path: `/categories/${category.slug}`,
+      lastmod: category.updatedAt,
+      changefreq: 'weekly',
+      priority: '0.7',
+      images: category.image ? [category.image] : [],
+      imageTitle: category.name
+    })),
+  ...products
+    .filter((product) => product?.slug)
+    .map((product) => ({
+      path: `/products/${product.slug}`,
+      lastmod: product.updatedAt,
+      changefreq: 'weekly',
+      priority: '0.8',
+      images: product.images || [],
+      imageTitle: product.name
+    }))
+];
 
 const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${sitemapRoutes.map(toXmlUrlEntry).join('\n')}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+${sitemapEntries.map(toXmlUrlEntry).join('\n')}
 </urlset>
 `;
 

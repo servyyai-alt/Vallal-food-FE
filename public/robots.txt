@@ -11,4 +11,4 @@ Disallow: /wishlist
 Disallow: /order-confirmation
 Disallow: /payment-demo
 
-Sitemap: http://localhost:5173/sitemap.xml
+Sitemap: https://www.vallalfoods.com/sitemap.xml
