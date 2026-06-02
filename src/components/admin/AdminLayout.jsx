@@ -67,7 +67,7 @@ export default function AdminLayout({ children }) {
   const Sidebar = () => (
     <div className="flex flex-col h-full bg-gray-900 text-white">
       <div className="p-6 border-b border-gray-800">
-          <img src={logo} alt="FreshMart" className="h-20 w-auto object-contain rounded-xl" />
+          <img src={logo} alt="Vallal Food Products" className="h-20 w-auto object-contain rounded-xl" />
       </div>
       <nav className="flex-1 p-4 space-y-1">
         {NAV.map(n => (

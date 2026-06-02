@@ -66,13 +66,19 @@ export const toggleWishlist = (data) => API.post('/wishlist/toggle', data);
 
 // Orders
 export const createOrder = (data) => API.post('/orders', data);
+export const createPaymentOrder = (data) => API.post('/orders/payment-order', data);
 export const verifyPayment = (data) => API.post('/orders/verify-payment', data);
+export const createRazorpayOrder = (data) => API.post('/payment/create-order', data);
+export const verifyRazorpayPayment = (data) => API.post('/payment/verify-payment', data);
 export const getMyOrders = () => API.get('/orders/my-orders');
 export const getOrderById = (id) => API.get(`/orders/${id}`);
 export const cancelMyOrder = (id) => API.put(`/orders/${id}/cancel`);
 export const getAllOrders = () => API.get('/orders/admin/all');
 export const updateOrderStatus = (id, data) => API.put(`/orders/${id}/status`, data);
 export const getDashboardStats = () => API.get('/orders/admin/dashboard');
+export const getStoreSettings = () => API.get('/store-settings');
+export const getStoreSettingsAdmin = () => API.get('/store-settings/admin');
+export const updateStoreSettings = (data) => API.put('/store-settings/admin', data);
 
 // Admin Users
 export const getAllUsers = () => API.get('/users');

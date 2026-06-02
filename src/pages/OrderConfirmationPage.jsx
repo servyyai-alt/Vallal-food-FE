@@ -23,7 +23,7 @@ export default function OrderConfirmationPage() {
           <FiCheckCircle className="w-10 h-10 text-primary-600" />
         </div>
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Order Placed!</h1>
-        <p className="text-gray-500 mb-1">Thank you for shopping with FreshMart 🌿</p>
+        <p className="text-gray-500 mb-1">Thank you for shopping with Vallal Food Products 🌿</p>
         <p className="text-sm text-gray-400 mb-8">Order ID: <span className="font-mono font-semibold text-gray-700">{order._id}</span></p>
 
         {/* Order Items */}

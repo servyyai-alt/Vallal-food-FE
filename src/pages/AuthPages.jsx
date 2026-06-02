@@ -104,7 +104,7 @@ export function LoginPage() {
           </p>
           {/* <div className="mt-4 p-3 bg-gray-50 rounded-xl text-xs text-gray-500 space-y-1">
             <p>Demo: <strong>admin@vallalfood.com</strong> / Admin@12345</p>
-            <p>Demo: <strong>user@freshmart.com</strong> / user123</p>
+            <p>Demo: <strong>user@Vallal Food Products.com</strong> / user123</p>
           </div> */}
         </div>
       </div>

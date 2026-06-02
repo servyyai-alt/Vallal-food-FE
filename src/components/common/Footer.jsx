@@ -12,7 +12,7 @@
 //         <div className="mb-12 grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-[1.2fr_0.8fr_0.9fr_0.9fr_1.8fr] xl:items-start">
 //           <div>
 //             <div className="mb-4 flex items-center gap-2">
-//               <img src={logo} alt="FreshMart" className="h-12 w-auto rounded-md object-contain" />
+//               <img src={logo} alt="Vallal Food Products" className="h-12 w-auto rounded-md object-contain" />
 //             </div>
 //             <p className="text-sm leading-relaxed text-gray-400">
 //               Farm-fresh groceries delivered to your doorstep. We source directly from farmers for maximum freshness.
@@ -135,7 +135,7 @@ export default function Footer() {
         <div className="mb-12 grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-[1.1fr_0.8fr_0.9fr_0.9fr_1fr_1.6fr] xl:items-start">
           <div>
             <div className="mb-4 flex items-center gap-2">
-              <img src={logo} alt="FreshMart" className="h-12 w-auto rounded-md object-contain" />
+              <img src={logo} alt="Vallal Food Products" className="h-12 w-auto rounded-md object-contain" />
             </div>
            <p className="text-sm leading-relaxed text-gray-400">
   Fresh store foods and daily essentials delivered to your doorstep with quality, freshness, and care.

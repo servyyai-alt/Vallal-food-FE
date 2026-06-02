@@ -1,16 +1,41 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiLock } from 'react-icons/fi';
-import { createOrder, verifyPayment } from '../services/api';
+import { createOrder, createPaymentOrder, getStoreSettings, verifyPayment } from '../services/api';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
+import { calculatePricing, DEFAULT_STORE_SETTINGS } from '../utils/pricing';
+
+const RAZORPAY_SCRIPT_URL = 'https://checkout.razorpay.com/v1/checkout.js';
+
+const loadRazorpayScript = () => new Promise((resolve) => {
+  if (window.Razorpay) {
+    resolve(true);
+    return;
+  }
+
+  const existingScript = document.querySelector(`script[src="${RAZORPAY_SCRIPT_URL}"]`);
+  if (existingScript) {
+    existingScript.addEventListener('load', () => resolve(true), { once: true });
+    existingScript.addEventListener('error', () => resolve(false), { once: true });
+    return;
+  }
+
+  const script = document.createElement('script');
+  script.src = RAZORPAY_SCRIPT_URL;
+  script.async = true;
+  script.onload = () => resolve(true);
+  script.onerror = () => resolve(false);
+  document.body.appendChild(script);
+});
 
 export default function CheckoutPage() {
   const { cart, clearCart } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [storeSettings, setStoreSettings] = useState(DEFAULT_STORE_SETTINGS);
   const [paymentMethod, setPaymentMethod] = useState('cod');
   const [address, setAddress] = useState({
     fullName: user?.name || '', phone: user?.phone || '',
@@ -18,9 +43,13 @@ export default function CheckoutPage() {
     state: user?.address?.state || '', pincode: user?.address?.pincode || ''
   });
 
-  const shipping = cart.totalAmount > 499 ? 0 : 49;
-  const tax = Math.round(cart.totalAmount * 0.05);
-  const total = cart.totalAmount + shipping + tax;
+  const { shipping, tax, total } = calculatePricing(cart.totalAmount, storeSettings);
+
+  useEffect(() => {
+    getStoreSettings()
+      .then((res) => setStoreSettings(res.data.settings || DEFAULT_STORE_SETTINGS))
+      .catch(() => {});
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,34 +62,57 @@ export default function CheckoutPage() {
       }));
       
       console.log("✅ SENDING ORDER DATA:", { orderItems, shippingAddress: address, paymentMethod });
-      
-      const { data } = await createOrder({ 
-        orderItems, 
-        shippingAddress: address, 
-        paymentMethod 
-      });
 
       if (paymentMethod === 'razorpay') {
+        const isLoaded = await loadRazorpayScript();
+        if (!isLoaded) {
+          throw new Error('Unable to load Razorpay Checkout');
+        }
+
+        const { data } = await createPaymentOrder({
+          orderItems,
+          shippingAddress: address,
+        });
+
         const options = {
           key: data.key,
           amount: data.razorpayOrder.amount,
           currency: 'INR',
-          name: 'FreshMart',
+          name: 'Vallal Food Products',
           description: 'Fresh Grocery Order',
           order_id: data.razorpayOrder.id,
           handler: async (response) => {
             try {
-              await verifyPayment({ orderId: data.order._id, ...response });
+              const verifyRes = await verifyPayment({
+                orderItems,
+                shippingAddress: address,
+                ...response
+              });
               clearCart();
-              navigate(`/order-confirmation/${data.order._id}`);
-            } catch { toast.error('Payment verification failed'); }
+              navigate(`/order-confirmation/${verifyRes.data.order._id}`);
+            } catch {
+              toast.error('Payment verification failed');
+              setLoading(false);
+            }
           },
           prefill: { name: address.fullName, contact: address.phone, email: user?.email },
-          theme: { color: '#16a34a' }
+          theme: { color: '#16a34a' },
+          modal: {
+            ondismiss: () => {
+              setLoading(false);
+              toast.error('Payment was cancelled');
+            }
+          }
         };
         const rzp = new window.Razorpay(options);
         rzp.open();
+        return;
       } else {
+        const { data } = await createOrder({
+          orderItems,
+          shippingAddress: address,
+          paymentMethod
+        });
         clearCart();
         navigate(`/order-confirmation/${data.order._id}`);
       }
@@ -148,7 +200,7 @@ export default function CheckoutPage() {
               <div className="border-t border-gray-100 pt-4 space-y-2 text-sm">
                 <div className="flex justify-between text-gray-600"><span>Subtotal</span><span>₹{cart.totalAmount?.toFixed(2)}</span></div>
                 <div className="flex justify-between text-gray-600"><span>Shipping</span><span className={shipping === 0 ? 'text-primary-600 font-medium' : ''}>{shipping === 0 ? 'FREE' : `₹${shipping}`}</span></div>
-                <div className="flex justify-between text-gray-600"><span>Tax (5%)</span><span>₹{tax}</span></div>
+                <div className="flex justify-between text-gray-600"><span>Tax ({storeSettings.taxRatePercent}%)</span><span>₹{tax}</span></div>
                 <div className="flex justify-between font-bold text-gray-900 text-base border-t border-gray-100 pt-2 mt-2">
                   <span>Total</span><span>₹{total.toFixed(2)}</span>
                 </div>

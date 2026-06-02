@@ -32,7 +32,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16 gap-4">
           {/* Logo */}
           <Link to="/" className="flex-shrink-0">
-            <img src={logo} alt="FreshMart" className="h-16 w-auto object-contain" />
+            <img src={logo} alt="Vallal Food Products" className="h-16 w-auto object-contain" />
           </Link>
 
           {/* Search Bar */}

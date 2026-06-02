@@ -22,6 +22,7 @@ import OrderHistoryPage from './pages/OrderHistoryPage';
 import ProfilePage from './pages/ProfilePage';
 import ContactPage from './pages/ContactPage';
 import PolicyPage from './pages/PolicyPage';
+import RazorpayDemoPage from './pages/RazorpayDemoPage';
 
 // Admin
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -52,7 +53,7 @@ function ScrollToTop() {
 }
 
 function WhatsAppButton() {
-  const whatsappUrl = 'https://wa.me/919842209470?text=Hello%20FreshMart%2C%20I%20need%20help%20with%20my%20order.';
+  const whatsappUrl = 'https://wa.me/919842209470?text=Hello%20Vallal Food Products%2C%20I%20need%20help%20with%20my%20order.';
 
   return (
     <a
@@ -88,6 +89,7 @@ export default function App() {
             <Route path="/products" element={<Layout><ProductsPage /></Layout>} />
             <Route path="/products/:slug" element={<Layout><ProductDetailPage /></Layout>} />
             <Route path="/contact" element={<Layout><ContactPage /></Layout>} />
+            <Route path="/payment-demo" element={<Layout><RazorpayDemoPage /></Layout>} />
             <Route path="/privacy-policy" element={<Layout><PolicyPage /></Layout>} />
             <Route path="/terms-and-conditions" element={<Layout><PolicyPage /></Layout>} />
             <Route path="/refund-cancellation-policy" element={<Layout><PolicyPage /></Layout>} />

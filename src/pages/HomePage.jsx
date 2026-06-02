@@ -12,9 +12,9 @@
 // // ];
 
 // // const TESTIMONIALS = [
-// //   { name: 'Priya Sharma', rating: 5, text: 'FreshMart has completely changed how I grocery shop. The produce is incredibly fresh!', avatar: 'P' },
+// //   { name: 'Priya Sharma', rating: 5, text: 'Vallal Food Products has completely changed how I grocery shop. The produce is incredibly fresh!', avatar: 'P' },
 // //   { name: 'Rahul Mehta', rating: 5, text: 'Best quality organic vegetables I\'ve ever had. Fast delivery and great packaging.', avatar: 'R' },
-// //   { name: 'Anjali Patel', rating: 5, text: 'Love the variety and freshness. My family only eats FreshMart groceries now!', avatar: 'A' }
+// //   { name: 'Anjali Patel', rating: 5, text: 'Love the variety and freshness. My family only eats Vallal Food Products groceries now!', avatar: 'A' }
 // // ];
 
 // // export default function HomePage() {

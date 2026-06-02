@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FiShoppingBag, FiUsers, FiPackage, FiDollarSign, FiArrowRight } from 'react-icons/fi';
-import { getDashboardStats } from '../../services/api';
+import toast from 'react-hot-toast';
+import { getDashboardStats, getStoreSettingsAdmin, updateStoreSettings } from '../../services/api';
 import { Loader } from '../../components/common/Loader';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useAdminPanel } from '../../context/AdminPanelContext';
@@ -18,16 +19,58 @@ const STATUS_STYLES = {
 export default function AdminDashboard() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [savingSettings, setSavingSettings] = useState(false);
+  const [pricingForm, setPricingForm] = useState({
+    taxRatePercent: 5,
+    shippingCharge: 49,
+    freeShippingThreshold: 499
+  });
   const { currentSearch } = useAdminPanel();
 
   useEffect(() => {
-    getDashboardStats()
-      .then(r => {
-        setStats(r.data.stats);
+    Promise.all([getDashboardStats(), getStoreSettingsAdmin()])
+      .then(([statsRes, settingsRes]) => {
+        setStats(statsRes.data.stats);
+        if (settingsRes.data?.settings) {
+          setPricingForm({
+            taxRatePercent: settingsRes.data.settings.taxRatePercent ?? 5,
+            shippingCharge: settingsRes.data.settings.shippingCharge ?? 49,
+            freeShippingThreshold: settingsRes.data.settings.freeShippingThreshold ?? 499
+          });
+        }
         setLoading(false);
       })
       .catch(() => setLoading(false));
   }, []);
+
+  const handlePricingChange = (key, value) => {
+    setPricingForm((current) => ({
+      ...current,
+      [key]: value
+    }));
+  };
+
+  const handlePricingSave = async (e) => {
+    e.preventDefault();
+    setSavingSettings(true);
+    try {
+      const payload = {
+        taxRatePercent: Number(pricingForm.taxRatePercent),
+        shippingCharge: Number(pricingForm.shippingCharge),
+        freeShippingThreshold: Number(pricingForm.freeShippingThreshold)
+      };
+      const res = await updateStoreSettings(payload);
+      setPricingForm({
+        taxRatePercent: res.data.settings.taxRatePercent,
+        shippingCharge: res.data.settings.shippingCharge,
+        freeShippingThreshold: res.data.settings.freeShippingThreshold
+      });
+      toast.success('Pricing settings updated');
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to update pricing settings');
+    }
+    setSavingSettings(false);
+  };
 
   if (loading) {
     return (
@@ -67,6 +110,37 @@ export default function AdminDashboard() {
               <p className="text-sm text-gray-500 mt-0.5">{card.label}</p>
             </Link>
           ))}
+        </div>
+
+        <div className="card p-6">
+          <div className="flex items-center justify-between mb-5">
+            <h2 className="font-bold text-lg text-gray-900">Pricing Settings</h2>
+            <span className="text-xs font-medium text-gray-500">Used in cart, checkout, and order totals</span>
+          </div>
+          <form onSubmit={handlePricingSave} className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-2">
+            {[
+              { key: 'taxRatePercent', label: 'Tax %', step: '0.01' },
+              { key: 'shippingCharge', label: 'Shipping Charge', step: '1' },
+              { key: 'freeShippingThreshold', label: 'Free Shipping Above', step: '1' }
+            ].map((field) => (
+              <div key={field.key}>
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">{field.label}</label>
+                <input
+                  type="number"
+                  min="0"
+                  step={field.step}
+                  value={pricingForm[field.key]}
+                  onChange={(e) => handlePricingChange(field.key, e.target.value)}
+                  className="input-field"
+                />
+              </div>
+            ))}
+            <div className="md:self-end">
+              <button type="submit" disabled={savingSettings} className="btn-primary w-full md:w-auto px-6 py-3">
+                {savingSettings ? 'Saving...' : 'Save'}
+              </button>
+            </div>
+          </form>
         </div>
 
         <div className="card p-6">

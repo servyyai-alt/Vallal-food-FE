@@ -1,14 +1,22 @@
 import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { FiMinus, FiPlus, FiTrash2, FiShoppingBag, FiArrowRight } from 'react-icons/fi';
 import { useCart } from '../context/CartContext';
+import { getStoreSettings } from '../services/api';
+import { calculatePricing, DEFAULT_STORE_SETTINGS } from '../utils/pricing';
 
 export default function CartPage() {
   const { cart, updateItem, removeItem, clearCart } = useCart();
   const navigate = useNavigate();
+  const [storeSettings, setStoreSettings] = useState(DEFAULT_STORE_SETTINGS);
 
-  const shipping = cart.totalAmount > 499 ? 0 : 49;
-  const tax = Math.round(cart.totalAmount * 0.05);
-  const total = cart.totalAmount + shipping + tax;
+  useEffect(() => {
+    getStoreSettings()
+      .then((res) => setStoreSettings(res.data.settings || DEFAULT_STORE_SETTINGS))
+      .catch(() => {});
+  }, []);
+
+  const { shipping, tax, total } = calculatePricing(cart.totalAmount, storeSettings);
 
   if (!cart.items?.length) return (
     <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-4">
@@ -134,12 +142,12 @@ export default function CartPage() {
                 </span>
               </div>
               <div className="flex justify-between text-gray-600">
-                <span>Tax (5%)</span>
+                <span>Tax ({storeSettings.taxRatePercent}%)</span>
                 <span>₹{tax}</span>
               </div>
               {shipping > 0 && (
                 <p className="text-xs text-accent-500 bg-accent-50 rounded-lg px-3 py-2">
-                  Add ₹{(499 - cart.totalAmount).toFixed(0)} more for free shipping!
+                  Add ₹{Math.max(0, storeSettings.freeShippingThreshold - cart.totalAmount).toFixed(0)} more for free shipping!
                 </p>
               )}
               <div className="border-t border-gray-100 pt-3 flex justify-between font-bold text-gray-900 text-base">
