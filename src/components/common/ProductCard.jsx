@@ -212,7 +212,7 @@ export default function ProductCard({ product }) {
     setIsWishlisted(isAdded);
   }, [user, product._id]);
 
-  const cartItem = cart.items?.find(item => item.product._id === product._id);
+  const cartItem = cart.items?.find((item) => item?.product?._id === product._id);
   const qty = cartItem?.quantity || 0;
 
   const handleWishlist = async (e) => {

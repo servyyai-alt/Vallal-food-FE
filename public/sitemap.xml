@@ -3,61 +3,61 @@
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://www.vallalfoods.com/</loc>
-    <lastmod>2026-06-02T11:50:03.194Z</lastmod>
+    <lastmod>2026-06-08T11:15:19.955Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://www.vallalfoods.com/about</loc>
-    <lastmod>2026-06-02T11:50:03.194Z</lastmod>
+    <lastmod>2026-06-08T11:15:19.955Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.vallalfoods.com/contact</loc>
-    <lastmod>2026-06-02T11:50:03.194Z</lastmod>
+    <lastmod>2026-06-08T11:15:19.955Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.vallalfoods.com/products</loc>
-    <lastmod>2026-06-02T11:50:03.194Z</lastmod>
+    <lastmod>2026-06-08T11:15:19.955Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://www.vallalfoods.com/categories</loc>
-    <lastmod>2026-06-02T11:50:03.194Z</lastmod>
+    <lastmod>2026-06-08T11:15:19.955Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.vallalfoods.com/privacy-policy</loc>
-    <lastmod>2026-06-02T11:50:03.194Z</lastmod>
+    <lastmod>2026-06-08T11:15:19.955Z</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
     <loc>https://www.vallalfoods.com/terms-and-conditions</loc>
-    <lastmod>2026-06-02T11:50:03.194Z</lastmod>
+    <lastmod>2026-06-08T11:15:19.955Z</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
     <loc>https://www.vallalfoods.com/refund-cancellation-policy</loc>
-    <lastmod>2026-06-02T11:50:03.194Z</lastmod>
+    <lastmod>2026-06-08T11:15:19.955Z</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
     <loc>https://www.vallalfoods.com/safety-guidelines</loc>
-    <lastmod>2026-06-02T11:50:03.194Z</lastmod>
+    <lastmod>2026-06-08T11:15:19.955Z</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
     <loc>https://www.vallalfoods.com/user-verification-policy</loc>
-    <lastmod>2026-06-02T11:50:03.194Z</lastmod>
+    <lastmod>2026-06-08T11:15:19.955Z</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
   </url>
@@ -91,6 +91,16 @@
     <image:image>
       <image:loc>https://images.unsplash.com/photo-1599490659213-e2b9527bd087?w=400</image:loc>
       <image:title>Snacks</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://www.vallalfoods.com/products/kadalai-mittai</loc>
+    <lastmod>2026-06-05T10:52:46.401Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/dlq43fjak/image/upload/v1780656667/vallal-products/huh5ou96sdixjgtskcdl.jpg</image:loc>
+      <image:title>Kadalai Mittai</image:title>
     </image:image>
   </url>
   <url>
