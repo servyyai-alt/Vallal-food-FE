@@ -1,0 +1,496 @@
+/* ==========================================================
+   Subscription Expired - White Theme SaaS Viewport Replication
+   ========================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+/* ── Root Container ── */
+.subscription-expired-root {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; /* Group logo and content in the center to avoid clipping bottom */
+    background: #FFFFFF; /* Pure White Background */
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    padding: 40px 24px;
+    overflow: hidden;
+    position: relative;
+    box-sizing: border-box;
+}
+
+/* ── Blueprint Grid (Faint Pattern) ── */
+.bg-blueprint {
+    position: absolute;
+    inset: 0;
+    background-image: 
+        linear-gradient(rgba(59, 130, 246, 0.012) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(59, 130, 246, 0.012) 1px, transparent 1px);
+    background-size: 40px 40px;
+    background-position: center center;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* ── Floating Background Particles ── */
+.bg-particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+    overflow: hidden;
+}
+
+.bg-particle {
+    position: absolute;
+    background: #dbe8ff; /* Faint blue particles */
+    opacity: 0.16; /* Opacity between 0.10 and 0.20 */
+    border-radius: 50%;
+    animation: floatParticles linear infinite;
+}
+
+@keyframes floatParticles {
+    0% {
+        transform: translateY(0) translateX(0);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.8;
+    }
+    90% {
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateY(-160px) translateX(40px);
+        opacity: 0;
+    }
+}
+
+/* ── Left Side Network Visualization ── */
+.bg-network-left {
+    position: absolute;
+    left: -60px; /* Keep it partially off-screen */
+    top: 50%;
+    transform: translateY(-50%);
+    width: clamp(320px, 28vw, 450px);
+    height: clamp(500px, 80vh, 700px);
+    pointer-events: none;
+    z-index: 2;
+    opacity: 0.55; /* Clearly visible */
+}
+
+.net-node {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: nodePulse 6s ease-in-out infinite alternate;
+}
+
+@keyframes nodePulse {
+    0% {
+        transform: scale(0.9);
+        opacity: 0.7;
+    }
+    100% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+}
+
+.net-line {
+    animation: lineOpacityFade 10s ease-in-out infinite alternate;
+}
+
+@keyframes lineOpacityFade {
+    0% {
+        opacity: 0.45;
+    }
+    100% {
+        opacity: 0.85;
+    }
+}
+
+/* Stagger line fade delays */
+.l1 { animation-delay: 0s; animation-duration: 9s; }
+.l2 { animation-delay: -1.5s; animation-duration: 11s; }
+.l3 { animation-delay: -3s; animation-duration: 8s; }
+.l4 { animation-delay: -4.5s; animation-duration: 12s; }
+.l5 { animation-delay: -1s; animation-duration: 10s; }
+.l6 { animation-delay: -2s; animation-duration: 9.5s; }
+.l7 { animation-delay: -3.5s; animation-duration: 11.5s; }
+.l8 { animation-delay: -5s; animation-duration: 8.5s; }
+.l9 { animation-delay: -6s; animation-duration: 10.5s; }
+.l10 { animation-delay: -7s; animation-duration: 9s; }
+
+/* ── Right Side Signal Waves ── */
+.bg-signal-right {
+    position: absolute;
+    right: -80px; /* Keep it partially off-screen */
+    top: 50%;
+    transform: translateY(-50%);
+    width: clamp(320px, 28vw, 450px);
+    height: clamp(500px, 80vh, 700px);
+    pointer-events: none;
+    z-index: 2;
+    opacity: 0.45; /* Clearly visible */
+}
+
+.signal-ring {
+    transform-origin: 320px 300px;
+}
+
+/* 5 concentric ring animation groups, expanding & slowly rotating dot spirals */
+.ring-1 { animation: ringExpandRotate1 8s linear infinite; }
+.ring-2 { animation: ringExpandRotate2 8.5s linear infinite; animation-delay: -1.7s; }
+.ring-3 { animation: ringExpandRotate3 9s linear infinite; animation-delay: -3.4s; }
+.ring-4 { animation: ringExpandRotate4 9.5s linear infinite; animation-delay: -5.1s; }
+.ring-5 { animation: ringExpandRotate5 10s linear infinite; animation-delay: -6.8s; }
+.ring-6 { animation: ringExpandRotate6 10.5s linear infinite; animation-delay: -8.5s; }
+
+@keyframes ringExpandRotate1 {
+    0% { transform: scale(0.5) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.9; }
+    80% { opacity: 0.7; }
+    100% { transform: scale(2.2) rotate(70deg); opacity: 0; }
+}
+
+@keyframes ringExpandRotate2 {
+    0% { transform: scale(0.5) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.9; }
+    80% { opacity: 0.7; }
+    100% { transform: scale(2.2) rotate(-90deg); opacity: 0; }
+}
+
+@keyframes ringExpandRotate3 {
+    0% { transform: scale(0.5) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.9; }
+    80% { opacity: 0.7; }
+    100% { transform: scale(2.2) rotate(50deg); opacity: 0; }
+}
+
+@keyframes ringExpandRotate4 {
+    0% { transform: scale(0.5) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.9; }
+    80% { opacity: 0.7; }
+    100% { transform: scale(2.2) rotate(-60deg); opacity: 0; }
+}
+
+@keyframes ringExpandRotate5 {
+    0% { transform: scale(0.5) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.9; }
+    80% { opacity: 0.7; }
+    100% { transform: scale(2.2) rotate(80deg); opacity: 0; }
+}
+
+@keyframes ringExpandRotate6 {
+    0% { transform: scale(0.5) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.9; }
+    80% { opacity: 0.7; }
+    100% { transform: scale(2.2) rotate(-80deg); opacity: 0; }
+}
+
+/* ── Top Logo ── */
+.subscription-top-logo {
+    margin-bottom: clamp(16px, 3.5vh, 32px); /* Spacing between logo and animation */
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    z-index: 10;
+}
+
+.subscription-logo-img {
+    width: 80px; /* Small Webby logo width */
+    height: auto;
+    object-fit: contain;
+}
+
+/* ── Main Content Area ── */
+.subscription-content {
+    width: 100%;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 10; /* Sits above background visualizations */
+}
+
+/* ── Hero Animation Container (Enlarged and Auto-height) ── */
+.connector-animation-container {
+    width: 100%;
+    max-width: 580px; /* Enlarged for maximum visual dominance */
+    height: auto; /* Let SVG scale vertically naturally with no empty layout padding */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+    flex-shrink: 0;
+}
+
+.connector-svg {
+    height: auto;
+    width: 100%;
+    overflow: visible;
+}
+
+/* ── Connector Animations ── */
+.connector-left {
+    animation: plugDriftLeft 3.5s ease-in-out infinite;
+}
+
+.connector-right {
+    animation: plugDriftRight 3.5s ease-in-out infinite;
+}
+
+.connector-center-x {
+    transform-origin: 400px 120px;
+    animation: xPulse 3.5s ease-in-out infinite;
+}
+
+.connector-sparks {
+    transform-origin: 400px 120px;
+    animation: sparksFade 3.5s ease-in-out infinite;
+}
+
+@keyframes plugDriftLeft {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    50% {
+        transform: translateX(-26px); /* Very strong separation drift */
+    }
+}
+
+@keyframes plugDriftRight {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    50% {
+        transform: translateX(26px); /* Very strong separation drift */
+    }
+}
+
+@keyframes xPulse {
+    0%, 100% {
+        transform: scale(0.9);
+        opacity: 0.6;
+    }
+    50% {
+        transform: scale(1.15); /* Stronger scale pulse */
+        opacity: 1;
+    }
+}
+
+@keyframes sparksFade {
+    0%, 100% {
+        opacity: 0;
+        transform: scale(0.85);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.15);
+    }
+}
+
+/* ── Connection Lost Pill Badge ── */
+.connection-lost-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #FFF5F5; /* Very light red */
+    padding: 6px 14px;
+    border-radius: 100px;
+    margin-bottom: 20px;
+    flex-shrink: 0;
+}
+
+.badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #EF4444;
+}
+
+.badge-text {
+    font-size: 11px;
+    font-weight: 700;
+    color: #EF4444;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+}
+
+/* ── Typography ── */
+.subscription-heading {
+    font-family: 'Playfair Display', 'Georgia', serif;
+    font-size: clamp(36px, 5.5vh, 60px); /* 64px–72px desktop */
+    font-weight: 700;
+    color: #0F172A; /* Dark Navy Color */
+    margin: 0 0 clamp(10px, 1.5vh, 16px) 0;
+    line-height: 1.1;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.subscription-description {
+    font-size: clamp(15px, 2vh, 17px);
+    font-weight: 400;
+    color: #64748B; /* Muted slate gray */
+    line-height: 1.9;
+    letter-spacing: 0.01em;
+    margin: 0 auto clamp(28px, 4.5vh, 40px) auto;
+    max-width: 720px;
+    text-align: center;
+    flex-shrink: 0;
+    word-spacing: 0.5px;
+}
+
+@media (min-width: 1024px) {
+    .subscription-description {
+        font-size: 18px;
+        line-height: 2;
+    }
+}
+
+/* ── Info Cards Row ── */
+.subscription-info-cards {
+    display: flex;
+    flex-direction: row;
+    gap: 24px;
+    margin-bottom: clamp(24px, 4vh, 40px);
+    flex-shrink: 0;
+}
+
+.info-card {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    padding: 16px 24px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    min-width: 220px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.015);
+    box-sizing: border-box;
+}
+
+.info-card-icon-wrapper {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #EFF6FF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.info-card-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.info-card-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+}
+
+.info-card-text.no-icon {
+    padding-left: 4px;
+}
+
+.info-card-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #94A3B8;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+}
+
+.info-card-value {
+    font-size: 17px;
+    font-weight: 700;
+    color: #0F172A;
+}
+
+.status-red {
+    color: #EF4444;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.status-red::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #EF4444;
+}
+
+/* ── Static Renew Text Row (No navigation, no pointer cursor) ── */
+.subscription-renew-text-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #475569; /* Muted text color, stays exact */
+    margin-top: 8px;
+    flex-shrink: 0;
+    cursor: default; /* No pointer cursor! */
+    user-select: none;
+}
+
+.renew-icon {
+    width: 16px;
+    height: 16px;
+}
+
+.renew-text {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.subscription-fallback-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #64748B;
+    margin-top: 8px;
+    flex-shrink: 0;
+}
+
+/* ── Screen Height Safeguard (Small Viewports) ── */
+@media (max-height: 640px) {
+    .subscription-expired-root {
+        padding: 16px 20px;
+    }
+    .subscription-top-logo {
+        margin-bottom: 12px;
+    }
+    .subscription-info-cards {
+        margin-bottom: 20px;
+        gap: 16px;
+    }
+    .subscription-description {
+        margin-bottom: 20px;
+    }
+}
+
+@media (max-width: 540px) {
+    .subscription-info-cards {
+        flex-direction: column;
+        gap: 12px;
+        width: 100%;
+        align-items: center;
+    }
+    .info-card {
+        width: 100%;
+        max-width: 280px;
+    }
+}

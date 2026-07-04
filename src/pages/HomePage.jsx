@@ -111,7 +111,7 @@ export default function HomePage() {
 
         <div className="absolute inset-0 bg-black/10" />
 
-        <div className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/75 via-black/40 to-transparent">
+        {/* <div className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/75 via-black/40 to-transparent">
           <div className="mx-auto max-w-7xl px-4 py-10 md:py-16">
             <div className="max-w-2xl text-white">
               <p className="mb-3 text-sm font-semibold uppercase tracking-[0.25em] text-green-200">Fresh From Vallal Food</p>
@@ -129,7 +129,7 @@ export default function HomePage() {
               </button>
             </div>
           </div>
-        </div>
+        </div> */}
       </section>
 
       <section className="bg-gradient-to-b from-white to-green-50 py-10 md:py-20">
